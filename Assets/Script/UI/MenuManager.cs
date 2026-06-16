@@ -6,38 +6,19 @@ public class MenuManager : MonoBehaviour
 {
     public string gameSceneName = "Sample Scene";
 
-    public GameObject TitleText;
-    public GameObject playButton;
-    public GameObject continueButton;
-    public GameObject settingsButton;
-    public GameObject creditButton;
-    public GameObject quitButton;
-
-    public GameObject returnButton;
-
-    [Header("Credits")]
+    public RectTransform menuPanel;
     public RectTransform creditPanel;
-    public Vector2 hiddenPosition;
-    public Vector2 shownPosition;
 
-    private bool creditsOpen = false;
+    public Vector2 mainMenuCenter;
+    public Vector2 mainMenuLeft;
+    public Vector2 creditHiddenRight;
+    public Vector2 creditCenter;
+
+    private bool transitioning = false;
 
     void Start()
     {
-        if (continueButton != null)
-        {
-            continueButton.SetActive(false);
-        }
-
-        if (returnButton != null)
-        {
-            returnButton.SetActive(false);
-        }
-
-        if (creditPanel != null)
-        {
-            creditPanel.anchoredPosition = hiddenPosition;
-        }
+        creditPanel.anchoredPosition = creditHiddenRight;
     }
 
     public void PlayGame()
@@ -45,15 +26,8 @@ public class MenuManager : MonoBehaviour
         SceneManager.LoadScene(gameSceneName);
     }
 
-    public void OpenSettings()
-    {
-        Debug.Log("Settings clicked.");
-    }
-
     public void QuitGame()
     {
-        Debug.Log("Quitting game...");
-
         Application.Quit();
 
 #if UNITY_EDITOR
@@ -63,64 +37,104 @@ public class MenuManager : MonoBehaviour
 
     public void OpenCredits()
     {
-        if (creditsOpen)
-            return;
-
-        creditsOpen = true;
-
-        TitleText.SetActive(false);
-        playButton.SetActive(false);
-        settingsButton.SetActive(false);
-        creditButton.SetActive(false);
-        quitButton.SetActive(false);
-
-        returnButton.SetActive(true);
-
         StopAllCoroutines();
-        StartCoroutine(SlidePanel(shownPosition));
+        StartCoroutine(OpenCreditsAnimation());
     }
 
     public void ReturnFromCredits()
     {
-        if (!creditsOpen)
-            return;
-
         StopAllCoroutines();
-        StartCoroutine(CloseCredits());
+        StartCoroutine(CloseCreditsAnimation());
     }
 
-    IEnumerator CloseCredits()
+    IEnumerator OpenCreditsAnimation()
     {
-        yield return StartCoroutine(SlidePanel(hiddenPosition));
+        transitioning = true;
 
-        TitleText.SetActive(true);
-        playButton.SetActive(true);
-        settingsButton.SetActive(true);
-        creditButton.SetActive(true);
-        quitButton.SetActive(true);
-
-        returnButton.SetActive(false);
-
-        creditsOpen = false;
-    }
-
-    IEnumerator SlidePanel(Vector2 targetPos)
-    {
-        float duration = 0.5f;
+        float duration = 1.0f;
         float time = 0f;
 
-        Vector2 startPos = creditPanel.anchoredPosition;
+        Vector2 menuStart = menuPanel.anchoredPosition;
+        Vector2 menuTarget = new Vector2(-1852, 0);
 
         while (time < duration)
         {
-            creditPanel.anchoredPosition =
-                Vector2.Lerp(startPos, targetPos, time / duration);
+            float t = Mathf.SmoothStep(0, 1, time / duration);
+
+            menuPanel.anchoredPosition =
+                Vector2.Lerp(menuStart, menuTarget, t);
 
             time += Time.deltaTime;
-
             yield return null;
         }
 
-        creditPanel.anchoredPosition = targetPos;
+        menuPanel.anchoredPosition = menuTarget;
+
+        yield return new WaitForSeconds(1f);
+
+        time = 0f;
+
+        Vector2 creditStart = creditPanel.anchoredPosition;
+        Vector2 creditTarget = new Vector2(-1699, 0);
+
+        while (time < duration)
+        {
+            float t = Mathf.SmoothStep(0, 1, time / duration);
+
+            creditPanel.anchoredPosition =
+                Vector2.Lerp(creditStart, creditTarget, t);
+
+            time += Time.deltaTime;
+            yield return null;
+        }
+
+        creditPanel.anchoredPosition = creditTarget;
+
+        transitioning = false;
+    }
+
+    IEnumerator CloseCreditsAnimation()
+    {
+        transitioning = true;
+
+        float duration = 1.0f;
+        float time = 0f;
+
+        Vector2 creditStart = creditPanel.anchoredPosition;
+        Vector2 creditTarget = new Vector2(1067, 0);
+
+        while (time < duration)
+        {
+            float t = Mathf.SmoothStep(0, 1, time / duration);
+
+            creditPanel.anchoredPosition =
+                Vector2.Lerp(creditStart, creditTarget, t);
+
+            time += Time.deltaTime;
+            yield return null;
+        }
+
+        creditPanel.anchoredPosition = creditTarget;
+
+        yield return new WaitForSeconds(1f);
+        time = 0f;
+
+        Vector2 menuStart = menuPanel.anchoredPosition;
+        Vector2 menuTarget = Vector2.zero;
+
+        while (time < duration)
+        {
+            float t = Mathf.SmoothStep(0, 1, time / duration);
+
+            menuPanel.anchoredPosition =
+                Vector2.Lerp(menuStart, menuTarget, t);
+
+            time += Time.deltaTime;
+            yield return null;
+        }
+
+        menuPanel.anchoredPosition = menuTarget;
+
+        transitioning = false;
     }
 }
