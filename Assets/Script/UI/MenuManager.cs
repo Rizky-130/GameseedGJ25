@@ -55,7 +55,7 @@ public class MenuManager : MonoBehaviour
         float time = 0f;
 
         Vector2 menuStart = menuPanel.anchoredPosition;
-        Vector2 menuTarget = new Vector2(-1852, 0);
+        Vector2 menuTarget = new Vector2(-2340, 0);
 
         while (time < duration)
         {
@@ -70,12 +70,12 @@ public class MenuManager : MonoBehaviour
 
         menuPanel.anchoredPosition = menuTarget;
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.1f);
 
         time = 0f;
 
         Vector2 creditStart = creditPanel.anchoredPosition;
-        Vector2 creditTarget = new Vector2(-1699, 0);
+        Vector2 creditTarget = new Vector2(-2340, 0);
 
         while (time < duration)
         {
@@ -116,7 +116,7 @@ public class MenuManager : MonoBehaviour
 
         creditPanel.anchoredPosition = creditTarget;
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.1f);
         time = 0f;
 
         Vector2 menuStart = menuPanel.anchoredPosition;
