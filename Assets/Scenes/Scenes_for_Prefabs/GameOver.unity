@@ -1041,7 +1041,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvasGroup: {fileID: 995697090}
-  fadeDuration: 1
+  fadeDuration: 0.3
   mainMenuScene: Title_Screen
 --- !u!1 &1396379538
 GameObject:

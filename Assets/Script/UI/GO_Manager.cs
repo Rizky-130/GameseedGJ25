@@ -14,7 +14,8 @@ public class GameOverManager : MonoBehaviour
     void Start()
     {
         canvasGroup.alpha = 0f;
-        gameObject.SetActive(false);
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
     }
 
     void Update()
@@ -27,13 +28,28 @@ public class GameOverManager : MonoBehaviour
 
     public void ShowGameOver()
     {
+        if (gameOverShown)
+            return;
+
         gameOverShown = true;
 
-        gameObject.SetActive(true);
-        StartCoroutine(FadeIn());
-
-        // Optional: Freeze the game
+        // Freeze the game immediately
         Time.timeScale = 0f;
+
+        StartCoroutine(GameOverSequence());
+    }
+
+    IEnumerator GameOverSequence()
+    {
+        // Wait 3 seconds in real time
+        yield return new WaitForSecondsRealtime(3f);
+
+        // Enable interaction
+        canvasGroup.interactable = true;
+        canvasGroup.blocksRaycasts = true;
+
+        // Fade in the UI
+        StartCoroutine(FadeIn());
     }
 
     IEnumerator FadeIn()
@@ -63,7 +79,6 @@ public class GameOverManager : MonoBehaviour
     public void ReturnToMainMenu()
     {
         Time.timeScale = 1f;
-
         SceneManager.LoadScene(mainMenuScene);
     }
 }
