@@ -7,57 +7,72 @@ public class RacikManager : MonoBehaviour
 
     [Header("Data")]
     public RecipeData[] allRecipes;
-    [Header("Slot bahan yang dipilih")]
+    [Header("Wajan")]
+    public CookingPan cookingPan;
 
-    public List<FoodType> selectedIngredients  = new List<FoodType>();
+    [Header("Slot bahan yang dipilih")]
+    public List<FoodType> selectedIngredients = new List<FoodType>();
     public int maxIngredients = 4;
+
+    [Header("Hasil Racikan Sekarang")]
+    public RecipeData currentResult;
+
     void Awake()
     {
         Instance = this;
+        selectedIngredients.Clear();
     }
-    // Start is called before the first frame update
-    // dipanggil saat pemain tap bahan di Rak
+
     public void SelectIngredient(FoodType ingredient)
     {
         if (selectedIngredients.Contains(ingredient))
         {
-            Debug.Log("Bahan sudah dipilih!");
-            return;
+            selectedIngredients.Remove(ingredient);
+            Debug.Log("Batal pilih: " + ingredient);
         }
-
-        if (selectedIngredients.Count >= maxIngredients)
+        else
         {
-            Debug.Log("Slot bahan penuh!");
-            return;
+            if (selectedIngredients.Count >= maxIngredients)
+            {
+                Debug.Log("Slot bahan penuh!");
+                return;
+            }
+            selectedIngredients.Add(ingredient);
+            Debug.Log("Pilih: " + ingredient);
         }
-
-        selectedIngredients.Add(ingredient);
-        Debug.Log("Pilih: " + ingredient);
-
         UIManager.Instance.UpdateRacikUI(selectedIngredients);
     }
 
-    // dipanggil saat tombol "Racik" ditekan
-    public RecipeData TryRacik()
+    // ganti dari "public RecipeData TryRacik()" jadi void
+    public void TryRacik()
     {
         foreach (var recipe in allRecipes)
         {
             if (IsMatch(recipe))
             {
                 Debug.Log("Berhasil racik: " + recipe.resultFood);
+                currentResult = recipe;
                 selectedIngredients.Clear();
                 UIManager.Instance.UpdateRacikUI(selectedIngredients);
-                return recipe;
+
+                // langsung taruh ke wajan
+                bool success = cookingPan.StartCooking(recipe);
+                if (!success)
+                {
+                    Debug.Log("Tidak bisa masak, wajan masih penuh!");
+                }
+
+                return;
             }
         }
 
         Debug.Log("Bahan tidak cocok dengan resep apapun!");
+        currentResult = null;
         selectedIngredients.Clear();
         UIManager.Instance.UpdateRacikUI(selectedIngredients);
-        return null;
+        UIManager.Instance.ShowRacikResult(null);
     }
 
-    // cek apakah bahan yang dipilih cocok dengan resep
     bool IsMatch(RecipeData recipe)
     {
         if (recipe.requiredIngredients.Length != selectedIngredients.Count)
@@ -68,7 +83,6 @@ public class RacikManager : MonoBehaviour
             if (!selectedIngredients.Contains(req))
                 return false;
         }
-
         return true;
     }
 

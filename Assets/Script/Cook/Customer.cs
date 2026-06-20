@@ -26,12 +26,12 @@ public class Customer : MonoBehaviour
     {
         if (!isWaiting) return;
 
-        currentTime += Time.deltaTime;
+        currentTime -= Time.deltaTime;
 
         //update timer visual, 1 = penuh, 0 = habis
         if (timerBar != null)
             timerBar.fillAmount = currentTime / waitTime;
-        if (currentTime == 0)
+        if (currentTime <= 0)
         {
             CustomerPergi();
         }

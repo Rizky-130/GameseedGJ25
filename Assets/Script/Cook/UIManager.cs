@@ -6,8 +6,14 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;
 
-    [Header("Racik UI")]
-    public TextMeshProUGUI[] racikSlotTexts; // 4 slot teks bahan dipilih
+    [Header("Racik Slots")]
+    public TextMeshProUGUI[] racikSlotTexts;
+    [Header("Makanan Siap Serah")]
+    public RecipeData readyFood;
+
+    [Header("Tombol Racik & Clear")]
+    public GameObject btnRacik;
+    public GameObject btnClear;
 
     void Awake()
     {
@@ -23,5 +29,18 @@ public class UIManager : MonoBehaviour
             else
                 racikSlotTexts[i].text = "---";
         }
+    }
+
+    public void ShowRacikResult(RecipeData result)
+    {
+        if (result != null)
+            Debug.Log("✅ Racik sukses: " + result.recipeName);
+        else
+            Debug.Log("❌ Racik gagal, bahan tidak cocok");
+    }
+    public void SetReadyFood(RecipeData food)
+    {
+        readyFood = food;
+        Debug.Log("Makanan siap diserahkan: " + (food != null ? food.resultFood.ToString() : "tidak ada"));
     }
 }
