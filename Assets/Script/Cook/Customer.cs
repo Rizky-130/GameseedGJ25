@@ -6,51 +6,85 @@ public class Customer : MonoBehaviour
 {
     [HideInInspector] public int slotIndex;
     [HideInInspector] public CustomerSpawner spawner;
+
     [Header("Pesanan")]
     public FoodType orderFood;
+
     [Header("Timer")]
     public float waitTime = 30f;
     private float currentTime;
     private bool isWaiting = true;
+
     [Header("UI Referensi")]
     public TextMeshProUGUI orderText;
     public Image timerBar;
+
     void Start()
     {
         currentTime = waitTime;
         orderText.text = orderFood.ToString();
+
+        // hubungkan tombol tap pelanggan
+        Button btn = GetComponent<Button>();
+        if (btn != null)
+        {
+            btn.onClick.RemoveAllListeners();
+            btn.onClick.AddListener(OnCustomerTapped);
+        }
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (!isWaiting) return;
 
         currentTime -= Time.deltaTime;
 
-        //update timer visual, 1 = penuh, 0 = habis
         if (timerBar != null)
             timerBar.fillAmount = currentTime / waitTime;
+
         if (currentTime <= 0)
         {
             CustomerPergi();
         }
-
     }
+
+    // dipanggil saat pelanggan di-tap pemain
+    void OnCustomerTapped()
+    {
+        RecipeData food = UIManager.Instance.readyFood;
+
+        if (food == null)
+        {
+            Debug.Log("Tidak ada makanan di tangan!");
+            return;
+        }
+
+        if (food.resultFood == orderFood)
+        {
+            CustomerMangan(food.resultFood);
+            UIManager.Instance.ClearReadyFood();   // makanan sudah dipakai
+        }
+        else
+        {
+            Debug.Log("Makanan tidak cocok dengan pesanan pelanggan ini!");
+        }
+    }
+
     public void CustomerMangan(FoodType food)
     {
         if (food == orderFood)
         {
             isWaiting = false;
-            spawner.ClearSlot(slotIndex); 
+            spawner.ClearSlot(slotIndex);
             GameManager.Instance.OnCustomerServed();
             Destroy(gameObject);
         }
     }
+
     public void CustomerPergi()
     {
         isWaiting = false;
-        spawner.ClearSlot(slotIndex); 
+        spawner.ClearSlot(slotIndex);
         GameManager.Instance.OnCustomerLeft();
         Destroy(gameObject);
     }

@@ -38,9 +38,15 @@ public class UIManager : MonoBehaviour
         else
             Debug.Log("❌ Racik gagal, bahan tidak cocok");
     }
+
     public void SetReadyFood(RecipeData food)
     {
         readyFood = food;
         Debug.Log("Makanan siap diserahkan: " + (food != null ? food.resultFood.ToString() : "tidak ada"));
+    }
+
+    public void ClearReadyFood()    // ← tambahkan ini
+    {
+        readyFood = null;
     }
 }
