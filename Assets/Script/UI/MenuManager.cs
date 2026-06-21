@@ -208,7 +208,7 @@ IEnumerator CloseSettingsAnimation()
     float time = 0f;
 
     Vector2 settingsStart = settingsPanel.anchoredPosition;
-    Vector2 settingsTarget = new Vector2(0, 0);
+    Vector2 settingsTarget = new Vector2(0, -100);
 
     while (time < duration)
     {

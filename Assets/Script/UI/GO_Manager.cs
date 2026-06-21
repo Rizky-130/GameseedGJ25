@@ -33,7 +33,6 @@ public class GameOverManager : MonoBehaviour
 
         gameOverShown = true;
 
-        // Freeze the game immediately
         Time.timeScale = 0f;
 
         StartCoroutine(GameOverSequence());
@@ -41,14 +40,11 @@ public class GameOverManager : MonoBehaviour
 
     IEnumerator GameOverSequence()
     {
-        // Wait 3 seconds in real time
         yield return new WaitForSecondsRealtime(3f);
 
-        // Enable interaction
         canvasGroup.interactable = true;
         canvasGroup.blocksRaycasts = true;
 
-        // Fade in the UI
         StartCoroutine(FadeIn());
     }
 
