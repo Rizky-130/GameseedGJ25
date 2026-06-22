@@ -9,6 +9,12 @@ public class PauseMenuManager : MonoBehaviour
     public RectTransform blackTintRect;
     public CanvasGroup pausePanelGroup;
 
+    [Header("Settings Shutter")]
+    public RectTransform settingsShutter;
+    public float settingsClosedY = 0f;
+    public float settingsOpenY = 1000f;
+    public bool settingsIsOpen = false;
+
     [Header("Quit Confirmation")]
     public GameObject confirmation1;
     public GameObject confirmation2;
@@ -52,6 +58,9 @@ public class PauseMenuManager : MonoBehaviour
 
         if (confirmation2 != null)
             confirmation2.SetActive(false);
+
+        if (settingsShutter != null)
+            SetSettingsShutterPosition(settingsOpenY);
     }
 
     void Update()
@@ -133,17 +142,22 @@ public class PauseMenuManager : MonoBehaviour
 
     IEnumerator AnimateShutter(float fromY, float toY)
     {
+        yield return AnimateValue(fromY, toY, SetShutterPosition);
+    }
+
+    IEnumerator AnimateValue(float fromY, float toY, System.Action<float> applyY)
+    {
         float timer = 0f;
 
         while (timer < shutterDuration)
         {
             timer += Time.unscaledDeltaTime;
             float t = shutterCurve.Evaluate(Mathf.Clamp01(timer / shutterDuration));
-            SetShutterPosition(Mathf.Lerp(fromY, toY, t));
+            applyY(Mathf.Lerp(fromY, toY, t));
             yield return null;
         }
 
-        SetShutterPosition(toY);
+        applyY(toY);
     }
 
     void SetShutterPosition(float y)
@@ -161,6 +175,16 @@ public class PauseMenuManager : MonoBehaviour
             tintPos.y = y + tintOffsetY;
             blackTintRect.anchoredPosition = tintPos;
         }
+    }
+
+    void SetSettingsShutterPosition(float y)
+    {
+        if (settingsShutter == null)
+            return;
+
+        Vector2 pos = settingsShutter.anchoredPosition;
+        pos.y = y;
+        settingsShutter.anchoredPosition = pos;
     }
 
     IEnumerator Shake()
@@ -216,5 +240,23 @@ public class PauseMenuManager : MonoBehaviour
     {
         if (confirmation2 != null)
             confirmation2.SetActive(false);
+    }
+
+    public void OnSettingsPressed()
+    {
+        if (settingsShutter == null || settingsIsOpen)
+            return;
+
+        settingsIsOpen = true;
+        StartCoroutine(AnimateValue(settingsOpenY, settingsClosedY, SetSettingsShutterPosition));
+    }
+
+    public void OnSettingsBackPressed()
+    {
+        if (settingsShutter == null || !settingsIsOpen)
+            return;
+
+        settingsIsOpen = false;
+        StartCoroutine(AnimateValue(settingsClosedY, settingsOpenY, SetSettingsShutterPosition));
     }
 }
