@@ -16,6 +16,7 @@ public class DistractionBubble : MonoBehaviour {
 		this.transform.localScale = Vector2.zero;
 		close_button.SetActive(false);
 		speech_text.text = "";
+		DistractionManager.Instance.bubble_count++;
 	}
 
 	void Update() {
@@ -64,5 +65,6 @@ public class DistractionBubble : MonoBehaviour {
 		Destroy(close_button.gameObject);
 		Destroy(speech_text.gameObject);
 		end = true;
+		DistractionManager.Instance.bubble_count--;
 	}
 }

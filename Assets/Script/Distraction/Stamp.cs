@@ -8,6 +8,7 @@ public class Stamp : MonoBehaviour {
 	private Vector3 mouse_position_offset;
 	private bool can_stamp = false;
 	public bool can_drag = false;
+	private bool is_offscreen = false;
 
 	private Vector3 GetMouseWorldPosition() {
 		return Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -15,7 +16,7 @@ public class Stamp : MonoBehaviour {
 
 	private void OnMouseDown() {
 		if (can_drag) {
-			mouse_position_offset = gameObject.transform.position - GetMouseWorldPosition();
+			mouse_position_offset = transform.position - GetMouseWorldPosition();
 		}
 	}
 
@@ -25,11 +26,14 @@ public class Stamp : MonoBehaviour {
 		}
 	}
 
-	private void OnMouseExit() {
+	private void OnMouseUp() {
 		if (can_stamp) {
 			can_stamp = false;
 			can_drag = false;
 			DistractionManager.Instance.HidePaper();
+		}
+		if (is_offscreen && can_drag) {
+			transform.localPosition = start_pos;
 		}
 	}
 
@@ -43,5 +47,14 @@ public class Stamp : MonoBehaviour {
 		if (collision.gameObject.name == "DistractionPaper") {
 			can_stamp = false;
 		}
+	}
+
+	private void OnBecameInvisible() {
+		is_offscreen = true;
+	}
+
+	private void OnBecameVisible() {
+		can_drag = true;
+		is_offscreen = false;
 	}
 }
