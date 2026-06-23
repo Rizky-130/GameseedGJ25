@@ -29,7 +29,7 @@ public class PauseMenuManager : MonoBehaviour
     [Header("Impact Shake")]
     public Transform cameraTransform;
     public float shakeDuration = 0.15f;
-    public float shakeStrength = 15f;
+    public float shakeStrength = 5f;
 
     private bool isPaused = false;
     private bool isAnimating = false;
@@ -195,8 +195,8 @@ public class PauseMenuManager : MonoBehaviour
         {
             timer += Time.unscaledDeltaTime;
 
-            float damper = 1f - (timer / shakeDuration);
-            float offsetY = Random.Range(-1f, 1f) * shakeStrength * damper;
+            float t = Mathf.Clamp01(timer / shakeDuration);
+            float offsetY = -shakeStrength * Mathf.Sin(t * Mathf.PI) * (1f - t);
 
             cameraTransform.localPosition = camOriginalPos + new Vector3(0f, offsetY, 0f);
 
@@ -248,7 +248,15 @@ public class PauseMenuManager : MonoBehaviour
             return;
 
         settingsIsOpen = true;
-        StartCoroutine(AnimateValue(settingsOpenY, settingsClosedY, SetSettingsShutterPosition));
+        StartCoroutine(CloseSettingsShutter());
+    }
+
+    IEnumerator CloseSettingsShutter()
+    {
+        yield return AnimateValue(settingsOpenY, settingsClosedY, SetSettingsShutterPosition);
+
+        if (cameraTransform != null)
+            yield return Shake();
     }
 
     public void OnSettingsBackPressed()
