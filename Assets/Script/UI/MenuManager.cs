@@ -10,101 +10,111 @@ public class MenuManager : MonoBehaviour
     public RectTransform creditPanel;
     public RectTransform settingsPanel;
 
-    public Vector2 mainMenuCenter;
-    public Vector2 mainMenuLeft;
-    public Vector2 creditHiddenRight;
-    public Vector2 creditCenter;
-    public Vector2 creditHiddenLeft;
+    public RectTransform background;
+
+    public Vector2 bgPositionMenu = new Vector2(0, 0);
+    public Vector2 bgPositionCredits = new Vector2(200, 0);   // tweak in Inspector
+    public Vector2 bgPositionSettings = new Vector2(-200, 0); // tweak in Inspector
+
+    [Range(0f, 1f)]
+    public float bgParallaxSpeed = 0.3f;
+
+    public float tiltDegrees = 35f;
 
     private bool transitioning = false;
 
     void Start()
     {
-        creditPanel.anchoredPosition = creditHiddenRight;
+        creditPanel.anchoredPosition = new Vector2(2340, 0);
+        settingsPanel.anchoredPosition = new Vector2(-2528, 0);
 
-        settingsPanel.anchoredPosition = creditHiddenLeft;
+        if (background != null)
+            background.anchoredPosition = bgPositionMenu;
     }
 
-    public void PlayGame()
-    {
-        SceneManager.LoadScene(gameSceneName);
-    }
+    public void PlayGame() => SceneManager.LoadScene(gameSceneName);
 
     public void QuitGame()
     {
         Application.Quit();
-
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#endif
+    #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+    #endif
     }
 
     public void OpenCredits()
-    {
-        StopAllCoroutines();
-        StartCoroutine(OpenCreditsAnimation());
+    { 
+        StopAllCoroutines(); 
+        StartCoroutine(OpenCreditsAnimation()); 
     }
-
-    public void ReturnFromCredits()
-    {
+    public void ReturnFromCredits() 
+    { 
         StopAllCoroutines();
         StartCoroutine(CloseCreditsAnimation());
     }
-
-    public void OpenSettings()
-    {
-        StopAllCoroutines();
-        StartCoroutine(OpenSettingsAnimation());
+    public void OpenSettings()      
+    { 
+        StopAllCoroutines(); 
+        StartCoroutine(OpenSettingsAnimation()); 
+    }
+    public void ReturnFromSettings()
+    { 
+        StopAllCoroutines(); 
+        StartCoroutine(CloseSettingsAnimation()); 
     }
 
-    public void ReturnFromSettings()
+    IEnumerator SlideAndSpin(RectTransform panel, Vector2 from, Vector2 to, float duration, float tiltSign)
     {
-        StopAllCoroutines();
-        StartCoroutine(CloseSettingsAnimation());
+        float time = 0f;
+        while (time < duration)
+        {
+            float t = Mathf.SmoothStep(0, 1, time / duration);
+            panel.anchoredPosition = Vector2.Lerp(from, to, t);
+            float tiltT = Mathf.Sin(t * Mathf.PI);
+            panel.localRotation = Quaternion.Euler(0, tiltSign * tiltDegrees * tiltT, 0);
+            time += Time.deltaTime;
+            yield return null;
+        }
+        panel.anchoredPosition = to;
+        panel.localRotation = Quaternion.identity;
+    }
+
+    IEnumerator SlideWithBG(RectTransform panel, Vector2 from, Vector2 to, float duration, float tiltSign, Vector2 bgTarget)
+    {
+        float time = 0f;
+        Vector2 bgFrom = background != null ? background.anchoredPosition : Vector2.zero;
+
+        while (time < duration)
+        {
+            float t = Mathf.SmoothStep(0, 1, time / duration);
+
+            panel.anchoredPosition = Vector2.Lerp(from, to, t);
+
+            float tiltT = Mathf.Sin(t * Mathf.PI);
+            panel.localRotation = Quaternion.Euler(0, tiltSign * tiltDegrees * tiltT, 0);
+
+            if (background != null)
+                background.anchoredPosition = Vector2.Lerp(bgFrom, bgTarget, t);
+
+            time += Time.deltaTime;
+            yield return null;
+        }
+
+        panel.anchoredPosition = to;
+        panel.localRotation = Quaternion.identity;
+        if (background != null)
+            background.anchoredPosition = bgTarget;
     }
 
     IEnumerator OpenCreditsAnimation()
     {
         transitioning = true;
-
         float duration = 1.0f;
-        float time = 0f;
 
-        Vector2 menuStart = menuPanel.anchoredPosition;
-        Vector2 menuTarget = new Vector2(-2340, 0);
-
-        while (time < duration)
-        {
-            float t = Mathf.SmoothStep(0, 1, time / duration);
-
-            menuPanel.anchoredPosition =
-                Vector2.Lerp(menuStart, menuTarget, t);
-
-            time += Time.deltaTime;
-            yield return null;
-        }
-
-        menuPanel.anchoredPosition = menuTarget;
-
-        yield return new WaitForSeconds(0.1f);
-
-        time = 0f;
-
-        Vector2 creditStart = creditPanel.anchoredPosition;
-        Vector2 creditTarget = new Vector2(-2340, 0);
-
-        while (time < duration)
-        {
-            float t = Mathf.SmoothStep(0, 1, time / duration);
-
-            creditPanel.anchoredPosition =
-                Vector2.Lerp(creditStart, creditTarget, t);
-
-            time += Time.deltaTime;
-            yield return null;
-        }
-
-        creditPanel.anchoredPosition = creditTarget;
+        yield return SlideWithBG(menuPanel, menuPanel.anchoredPosition, 
+        new Vector2(-2340, 0), duration, -0.6f, bgPositionCredits);
+        yield return SlideAndSpin(creditPanel, creditPanel.anchoredPosition, 
+        new Vector2(-2340, 0), duration, -0.6f);
 
         transitioning = false;
     }
@@ -112,137 +122,39 @@ public class MenuManager : MonoBehaviour
     IEnumerator CloseCreditsAnimation()
     {
         transitioning = true;
-
         float duration = 1.0f;
-        float time = 0f;
 
-        Vector2 creditStart = creditPanel.anchoredPosition;
-        Vector2 creditTarget = new Vector2(1067, 0);
-
-        while (time < duration)
-        {
-            float t = Mathf.SmoothStep(0, 1, time / duration);
-
-            creditPanel.anchoredPosition =
-                Vector2.Lerp(creditStart, creditTarget, t);
-
-            time += Time.deltaTime;
-            yield return null;
-        }
-
-        creditPanel.anchoredPosition = creditTarget;
-
-        yield return new WaitForSeconds(0.1f);
-        time = 0f;
-
-        Vector2 menuStart = menuPanel.anchoredPosition;
-        Vector2 menuTarget = Vector2.zero;
-
-        while (time < duration)
-        {
-            float t = Mathf.SmoothStep(0, 1, time / duration);
-
-            menuPanel.anchoredPosition =
-                Vector2.Lerp(menuStart, menuTarget, t);
-
-            time += Time.deltaTime;
-            yield return null;
-        }
-
-        menuPanel.anchoredPosition = menuTarget;
+        yield return SlideAndSpin(creditPanel, creditPanel.anchoredPosition, 
+        new Vector2(2340, 0), duration, 1f);
+        yield return SlideWithBG(menuPanel, menuPanel.anchoredPosition,
+        Vector2.zero, duration, 1f, bgPositionMenu);
 
         transitioning = false;
     }
 
     IEnumerator OpenSettingsAnimation()
-{
-    transitioning = true;
-
-    float duration = 1.0f;
-    float time = 0f;
-
-    Vector2 menuStart = menuPanel.anchoredPosition;
-    Vector2 menuTarget = new Vector2(2528, 0);
-
-    while (time < duration)
     {
-        float t = Mathf.SmoothStep(0, 1, time / duration);
+        transitioning = true;
+        float duration = 1.0f;
 
-        menuPanel.anchoredPosition =
-            Vector2.Lerp(menuStart, menuTarget, t);
+        yield return SlideWithBG(menuPanel, menuPanel.anchoredPosition, -
+        new Vector2(-2528, -100), duration, -0.6f, bgPositionSettings);
+        yield return SlideAndSpin(settingsPanel, settingsPanel.anchoredPosition, 
+        new Vector2(2528, -100), duration, -0.6f);
 
-        time += Time.deltaTime;
-        yield return null;
+        transitioning = false;
     }
 
-    menuPanel.anchoredPosition = menuTarget;
-
-    yield return new WaitForSeconds(0.1f);
-
-    time = 0f;
-
-    Vector2 settingsStart = settingsPanel.anchoredPosition;
-    Vector2 settingsTarget = new Vector2(2528, -100);
-
-    while (time < duration)
+    IEnumerator CloseSettingsAnimation()
     {
-        float t = Mathf.SmoothStep(0, 1, time / duration);
+        transitioning = true;
+        float duration = 1.0f;
 
-        settingsPanel.anchoredPosition =
-            Vector2.Lerp(settingsStart, settingsTarget, t);
+        yield return SlideAndSpin(settingsPanel, settingsPanel.anchoredPosition, 
+        new Vector2(-2528, 0), duration, 1f);
+        yield return SlideWithBG(menuPanel, menuPanel.anchoredPosition, 
+        Vector2.zero, duration, 1f, bgPositionMenu);
 
-        time += Time.deltaTime;
-        yield return null;
+        transitioning = false;
     }
-
-    settingsPanel.anchoredPosition = settingsTarget;
-
-    transitioning = false;
-}
-
-IEnumerator CloseSettingsAnimation()
-{
-    transitioning = true;
-
-    float duration = 1.0f;
-    float time = 0f;
-
-    Vector2 settingsStart = settingsPanel.anchoredPosition;
-    Vector2 settingsTarget = new Vector2(0, -100);
-
-    while (time < duration)
-    {
-        float t = Mathf.SmoothStep(0, 1, time / duration);
-
-        settingsPanel.anchoredPosition =
-            Vector2.Lerp(settingsStart, settingsTarget, t);
-
-        time += Time.deltaTime;
-        yield return null;
-    }
-
-    settingsPanel.anchoredPosition = settingsTarget;
-
-    yield return new WaitForSeconds(0.1f);
-
-    time = 0f;
-
-    Vector2 menuStart = menuPanel.anchoredPosition;
-    Vector2 menuTarget = Vector2.zero;
-
-    while (time < duration)
-    {
-        float t = Mathf.SmoothStep(0, 1, time / duration);
-
-        menuPanel.anchoredPosition =
-            Vector2.Lerp(menuStart, menuTarget, t);
-
-        time += Time.deltaTime;
-        yield return null;
-    }
-
-    menuPanel.anchoredPosition = menuTarget;
-
-    transitioning = false;
-}
 }
