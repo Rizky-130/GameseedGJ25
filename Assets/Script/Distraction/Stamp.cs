@@ -30,7 +30,7 @@ public class Stamp : MonoBehaviour {
 		if (can_stamp) {
 			can_stamp = false;
 			can_drag = false;
-			DistractionManager.Instance.HidePaper();
+			DistractionManager.Instance.Stamp();
 		}
 		if (is_offscreen && can_drag) {
 			transform.localPosition = start_pos;

@@ -46,5 +46,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bubble_prefab: {fileID: 1900279613096922216, guid: 0ded2369dc0c6124cbb1ca1ba7e1c3d7, type: 3}
   distraction_paper: {fileID: 0}
-  stamp: {fileID: 0}
+  boss: {fileID: 0}
   time_until_game_over: 30
+  paper_start_y: 10
+  paper_min_time: 8
+  paper_max_time: 30
+  paper_min_max_time: 12
+  speeches:
+  - I heard the food sucks!
+  - I'm HUNGRY.
+  - This place STINKS.
+  - Can't you cook any faster?
+  - Be quick! Or I'll just eat you instead.
+  bubble_min_time: 4
+  bubble_max_time: 15
+  bubble_min_max_time: 6
+  max_bubbles: 6
+  bubble_count: 0
+  cust: 0
