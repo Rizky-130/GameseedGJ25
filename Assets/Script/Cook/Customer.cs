@@ -66,6 +66,7 @@ public class Customer : MonoBehaviour
         }
         else
         {
+            CustomerPergi();
             Debug.Log("Makanan tidak cocok dengan pesanan pelanggan ini!");
         }
     }
@@ -80,7 +81,21 @@ public class Customer : MonoBehaviour
             Destroy(gameObject);
         }
     }
+    public bool TryServe(RecipeData food)
+    {
+        if (food == null) return false;
 
+        if (food.resultFood == orderFood)
+        {
+            CustomerMangan(food.resultFood);
+            return true;
+        }
+        else
+        {
+            Debug.Log("Makanan tidak cocok dengan pesanan pelanggan ini!");
+            return false;
+        }
+    }
     public void CustomerPergi()
     {
         isWaiting = false;

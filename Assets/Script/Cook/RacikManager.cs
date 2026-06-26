@@ -73,6 +73,26 @@ public class RacikManager : MonoBehaviour
         UIManager.Instance.ShowRacikResult(null);
     }
 
+    public RecipeData CekResep(List<FoodType> bahan)
+    {
+        foreach (var recipe in allRecipes)
+        {
+            if (recipe.requiredIngredients.Length != bahan.Count) continue;
+
+            bool cocok = true;
+            foreach (var req in recipe.requiredIngredients)
+            {
+                if (!bahan.Contains(req))
+                {
+                    cocok = false;
+                    break;
+                }
+            }
+
+            if (cocok) return recipe;
+        }
+        return null;
+    }
     bool IsMatch(RecipeData recipe)
     {
         if (recipe.requiredIngredients.Length != selectedIngredients.Count)
@@ -84,6 +104,36 @@ public class RacikManager : MonoBehaviour
                 return false;
         }
         return true;
+    }
+    public bool CekMasihMungkin(List<FoodType> bahanSekarang)
+    {
+        foreach (var recipe in allRecipes)
+        {
+            bool semuaAdaDiResep = true;
+
+            foreach (var bahan in bahanSekarang)
+            {
+                bool adaDiResepIni = false;
+                foreach (var req in recipe.requiredIngredients)
+                {
+                    if (req == bahan)
+                    {
+                        adaDiResepIni = true;
+                        break;
+                    }
+                }
+
+                if (!adaDiResepIni)
+                {
+                    semuaAdaDiResep = false;
+                    break;
+                }
+            }
+
+            if (semuaAdaDiResep) return true;
+        }
+
+        return false; // tidak ada resep yang mungkin cocok
     }
 
     public void ClearSelection()

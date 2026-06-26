@@ -22,6 +22,15 @@ public class CookingPan : MonoBehaviour
     public Color cookingColor = Color.yellow;
     public Color readyColor = Color.green;
     public Color overcookColor = Color.red;
+    [Header("Makanan Jadi")]
+    public DraggableFood draggableFood;
+
+    private RectTransform rectTransform;
+    void Start()
+    {
+        rectTransform = GetComponent<RectTransform>();
+
+    }
 
     void Update()
     {
@@ -77,8 +86,9 @@ public class CookingPan : MonoBehaviour
         else if (state == CookState.Overcooked)
         {
             Debug.Log("Makanan gosong, tidak bisa diserahkan!");
+            RecipeData result = currentRecipe;
             ResetPan();
-            return null;
+            return result;
         }
         else
         {
@@ -121,14 +131,22 @@ public class CookingPan : MonoBehaviour
     // dipanggil saat wajan di-tap (lewat Button component)
     public void OnPanTapped()
     {
-        if (state == CookState.Ready || state == CookState.Overcooked)
+        if (state == CookState.Ready)
         {
             RecipeData food = TakeFood();
             if (food != null)
             {
                 Debug.Log("Makanan diangkat: " + food.resultFood);
-                // nanti di sini kita hubungkan ke "makanan siap diserahkan"
-                UIManager.Instance.SetReadyFood(food);
+                draggableFood.SetFood(food, rectTransform);
+            }
+        }
+        else if (state == CookState.Overcooked)
+        {
+            RecipeData food = TakeFood();
+            if (food != null)
+            {
+                Debug.Log("Makanan gosong diangkat.");
+                draggableFood.SetFoodBurnt(food, rectTransform);
             }
         }
     }
