@@ -5,47 +5,67 @@ using TMPro;
 public class CookingPan : MonoBehaviour
 {
     [Header("Data Masakan")]
-    public RecipeData currentRecipe;     // resep yang sedang dimasak
+    public RecipeData currentRecipe;     
     public CookState state = CookState.Empty;
 
     [Header("Timer")]
     private float cookTimer;
-    public float overcookTime = 5f;      // berapa lama bisa gosong setelah matang
+    public float overcookTime = 5f;      
 
     [Header("UI")]
-    public Image progressBar;            // bar visual proses masak
-    public TextMeshProUGUI stateText;    // teks status (Kosong/Memasak/Siap/Gosong)
-    public Image panVisual;              // warna wajan berubah sesuai state
+    public Image progressBar;            
+    public TextMeshProUGUI stateText;    
+    public Image panVisual;              
 
-    [Header("Warna State")]
-    public Color emptyColor = Color.gray;
-    public Color cookingColor = Color.yellow;
-    public Color readyColor = Color.green;
-    public Color overcookColor = Color.red;
+    [Header("Animasi Panci")]
+    public Sprite emptyPanSprite;        // Panci diam (dipakai saat Kosong, Matang, dan Gosong)
+    public Sprite[] cookingSprites;      // Array frame animasi hanya saat memasak
+    public float frameInterval = 0.2f;   
+    
+    private float animTimer;             
+    private int currentFrame;            
+
     [Header("Makanan Jadi")]
     public DraggableFood draggableFood;
 
     private RectTransform rectTransform;
+
     void Start()
     {
         rectTransform = GetComponent<RectTransform>();
-
+        UpdateVisual();
     }
 
     void Update()
     {
         if (state == CookState.Cooking)
         {
+            // 1. Logika Timer Masak
             cookTimer -= Time.deltaTime;
             progressBar.fillAmount = 1 - (cookTimer / currentRecipe.cookTime);
 
+            // 2. Logika Animasi Memasak (Frame-by-frame bergerak)
+            animTimer += Time.deltaTime;
+            if (animTimer >= frameInterval)
+            {
+                animTimer = 0f;
+                if (cookingSprites != null && cookingSprites.Length > 0)
+                {
+                    currentFrame = (currentFrame + 1) % cookingSprites.Length;
+                    panVisual.sprite = cookingSprites[currentFrame];
+                }
+            }
+
+            // 3. Cek Jika Matang
             if (cookTimer <= 0)
             {
                 state = CookState.Ready;
                 progressBar.fillAmount = 1;
-                cookTimer = overcookTime;   // mulai hitung mundur overcook
+                cookTimer = overcookTime;   
+                
+                // Panggil UpdateVisual agar animasi langsung berhenti & kembali ke panci kosong
+                UpdateVisual(); 
             }
-            UpdateVisual();
         }
         else if (state == CookState.Ready)
         {
@@ -53,12 +73,11 @@ public class CookingPan : MonoBehaviour
             if (cookTimer <= 0)
             {
                 state = CookState.Overcooked;
-                UpdateVisual();
+                UpdateVisual(); 
             }
         }
     }
 
-    // dipanggil saat pemain taruh hasil racik ke wajan
     public bool StartCooking(RecipeData recipe)
     {
         if (state != CookState.Empty)
@@ -70,22 +89,19 @@ public class CookingPan : MonoBehaviour
         currentRecipe = recipe;
         cookTimer = recipe.cookTime;
         state = CookState.Cooking;
+        
+        // Reset frame animasi ke awal saat mulai masak
+        currentFrame = 0;
+        animTimer = 0f;
+        
         UpdateVisual();
         return true;
     }
 
-    // dipanggil saat pemain tap wajan untuk ambil makanan
     public RecipeData TakeFood()
     {
-        if (state == CookState.Ready)
+        if (state == CookState.Ready || state == CookState.Overcooked)
         {
-            RecipeData result = currentRecipe;
-            ResetPan();
-            return result;
-        }
-        else if (state == CookState.Overcooked)
-        {
-            Debug.Log("Makanan gosong, tidak bisa diserahkan!");
             RecipeData result = currentRecipe;
             ResetPan();
             return result;
@@ -107,28 +123,29 @@ public class CookingPan : MonoBehaviour
 
     void UpdateVisual()
     {
+        panVisual.color = Color.white; 
+
         switch (state)
         {
             case CookState.Empty:
-                panVisual.color = emptyColor;
+                panVisual.sprite = emptyPanSprite;
                 stateText.text = "Kosong";
                 break;
             case CookState.Cooking:
-                panVisual.color = cookingColor;
+                // Sprite diatur oleh Update() saat animasi berjalan
                 stateText.text = "Memasak...";
                 break;
             case CookState.Ready:
-                panVisual.color = readyColor;
+                // panVisual.sprite = emptyPanSprite; // Kembali ke panci diam (animasi berhenti)
                 stateText.text = "Siap! Tap untuk angkat";
                 break;
             case CookState.Overcooked:
-                panVisual.color = overcookColor;
+                panVisual.sprite = emptyPanSprite; // Tetap panci diam
                 stateText.text = "Gosong!";
                 break;
         }
     }
 
-    // dipanggil saat wajan di-tap (lewat Button component)
     public void OnPanTapped()
     {
         if (state == CookState.Ready)

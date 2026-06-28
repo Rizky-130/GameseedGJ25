@@ -3,17 +3,17 @@ public enum FoodType
     None,
 
      // === Makanan Jadi ===
-    NasiGoreng,
-    MieGoreng,
-    Seblak,
+    SteakMinotaur,
+    TempuraUdangSungaiStyx,
+    BuritoMayatCincang,
      // === BAHAN MENTAH ===
-    Nasi,
-    Mie,
-    Kerupuk,
-    Telur,
-    Kecap,
-    SausSeblak,
-    Bawang,
-    Cabai
+    Flour,
+    Prawn,
+    Meat,
+    Spices,
+    Water,
+    GroundMeat,
+    MixVeggies,
+    Tortilla
 
 }

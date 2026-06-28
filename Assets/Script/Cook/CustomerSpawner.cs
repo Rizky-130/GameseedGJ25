@@ -97,7 +97,7 @@ public class CustomerSpawner : MonoBehaviour
             return;
         }
 
-        FoodType[] menu = { FoodType.NasiGoreng, FoodType.MieGoreng, FoodType.Seblak };
+        FoodType[] menu = { FoodType.BuritoMayatCincang, FoodType.SteakMinotaur, FoodType.TempuraUdangSungaiStyx };
         c.orderFood = menu[Random.Range(0, menu.Length)];
         c.waitTime = GetCurrentWaitTime();
         c.slotIndex = slotIndex;

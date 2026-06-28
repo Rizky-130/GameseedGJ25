@@ -13,9 +13,9 @@ public class MangkokRacik : MonoBehaviour, IDropHandler, IBeginDragHandler, IDra
     [Header("UI")]
     public Image mangkokImage;
     public Color emptyColor = Color.white;
-    public Color filledColor = Color.yellow;
-    public Color cookingColor = Color.cyan;
-    public Color readyColor = Color.green;
+    public Color filledColor = Color.white;
+    public Color cookingColor = Color.white;
+    public Color readyColor = Color.white;
     [Header("Peringatan")]
     public TextMeshProUGUI warningText;   // drag Text peringatan di Inspector
     public float warningDuration = 2f;
@@ -31,6 +31,7 @@ public class MangkokRacik : MonoBehaviour, IDropHandler, IBeginDragHandler, IDra
     [Header("State")]
     public bool isCooking = false;
     public bool isReady = false;
+    private Sprite defaultMangkokSprite;
 
     private Canvas parentCanvas;
     private Vector2 originalPosition;
@@ -48,6 +49,11 @@ public class MangkokRacik : MonoBehaviour, IDropHandler, IBeginDragHandler, IDra
 
         rectTransform = GetComponent<RectTransform>();
         originalPosition = rectTransform.anchoredPosition;
+
+        if (mangkokImage != null)
+        {
+            defaultMangkokSprite = mangkokImage.sprite;
+        }
     }
 
     void Start()
@@ -140,7 +146,7 @@ public class MangkokRacik : MonoBehaviour, IDropHandler, IBeginDragHandler, IDra
 
     IEnumerator AnimasiRacik(RecipeData resep)
     {
-        mangkokImage.color = cookingColor;
+        mangkokImage.color = Color.white;
         float elapsed = 0f;
 
         while (elapsed < racikDuration)
@@ -158,7 +164,10 @@ public class MangkokRacik : MonoBehaviour, IDropHandler, IBeginDragHandler, IDra
         isCooking = false;
         isReady = true;
         RacikManager.Instance.currentResult = resep;
-        mangkokImage.color = readyColor;
+        if (resep.mangkokIsiSprite != null)
+        {
+            mangkokImage.sprite = resep.mangkokIsiSprite; // Gambar berubah jadi mangkok isi gurita/daging/udang
+        }
         Debug.Log("Racik selesai! Drag mangkok ke panci.");
     }
 
@@ -240,7 +249,7 @@ public class MangkokRacik : MonoBehaviour, IDropHandler, IBeginDragHandler, IDra
         if (mangkokImage != null)
         {
             mangkokImage.color = emptyColor;
-            mangkokImage.sprite = null;
+            mangkokImage.sprite = defaultMangkokSprite;
         }
         GetComponent<RectTransform>().anchoredPosition = originalPosition;
         if (btnRacik != null)

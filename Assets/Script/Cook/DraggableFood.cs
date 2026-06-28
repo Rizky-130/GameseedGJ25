@@ -12,7 +12,6 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     [Header("UI")]
     public Image foodImage;
-    public TextMeshProUGUI foodNameText;
 
     private Canvas parentCanvas;
     private RectTransform rectTransform;
@@ -37,8 +36,7 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         currentFood = food;
         isBurnt = false;
 
-        if (foodNameText != null)
-            foodNameText.text = food.resultFood.ToString();
+        
 
         if (food.foodIcon != null && foodImage != null)
             foodImage.sprite = food.foodIcon;

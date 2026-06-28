@@ -7,10 +7,10 @@ public class DraggableIngredient : MonoBehaviour, IBeginDragHandler, IDragHandle
     [Header("Data")]
     public IngridientData ingredientData;
 
-    [Header("UI")]
-    public Image backgroundImage;
-    public Color normalColor = Color.white;
-    public Color selectedColor = Color.yellow;
+    // [Header("UI")]
+    // public Image backgroundImage;
+    // public Color normalColor = Color.white;
+    // public Color selectedColor = Color.yellow;
 
     private GameObject dragVisual;
     private RectTransform dragVisualRect;

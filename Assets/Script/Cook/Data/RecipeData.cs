@@ -8,4 +8,6 @@ public class RecipeData : ScriptableObject
     public FoodType[] requiredIngredients; // bahan     yang dibutuhkan
     public float cookTime = 5f;          // berapa lama memasaknya
     public Sprite foodIcon;
+    [Header("Visual Mangkok Racik")]
+    public Sprite mangkokIsiSprite;
 }
