@@ -10,18 +10,28 @@ public class DistractionManager : MonoBehaviour {
 	[SerializeField] private GameObject distraction_paper;
 	[SerializeField] private GameObject boss;
 
+	[SerializeField] private int p1_customers_upper_bound = 15;
+	[SerializeField] private int p2_customers_upper_bound = 30;
+
 	[Header("Paper")]
 	[SerializeField] private float time_until_game_over = 30;//s
 	[SerializeField] private float paper_start_y = 10;
-	[SerializeField] private float paper_min_time = 8;//s
-	[SerializeField] private float paper_max_time = 30;//s
-	[SerializeField] private float paper_min_max_time = 12;//s
+
+	[SerializeField] private float p1_paper_min_time = 15;//s
+	[SerializeField] private float p1_paper_max_time = 30;//s
+	[SerializeField] private float p2_paper_min_time = 12;//s
+	[SerializeField] private float p2_paper_max_time = 28;//s
+	[SerializeField] private float p3_paper_min_time = 9;//s
+	[SerializeField] private float p3_paper_max_time = 22;//s
 
 	[Header("Bubble")]
 	[SerializeField] private string[] speeches;
-	[SerializeField] private float bubble_min_time = 4;//s
-	[SerializeField] private float bubble_max_time = 15;//s
-	[SerializeField] private float bubble_min_max_time = 6;//s
+	[SerializeField] private float p1_bubble_min_time = 10;//s
+	[SerializeField] private float p1_bubble_max_time = 20;//s
+	[SerializeField] private float p2_bubble_min_time = 8;//s
+	[SerializeField] private float p2_bubble_max_time = 18;//s
+	[SerializeField] private float p3_bubble_min_time = 7;//s
+	[SerializeField] private float p3_bubble_max_time = 18;//s
 	[SerializeField] private int max_bubbles = 6;
 	public int bubble_count = 0;
 
@@ -129,13 +139,27 @@ public class DistractionManager : MonoBehaviour {
 	}
 
 	IEnumerator WaitForBoss() {
-		float delay = Random.Range(paper_min_time, Mathf.Max(paper_max_time - (0.36f * GameManager.Instance.customerServed), paper_min_max_time));
+		float delay;
+		if (GameManager.Instance.customerServed <= p1_customers_upper_bound) {
+			delay = Random.Range(p1_paper_min_time, p1_paper_max_time);
+		} else if (GameManager.Instance.customerServed <= p2_customers_upper_bound) {
+			delay = Random.Range(p2_paper_min_time, p2_paper_max_time);
+		} else {
+			delay = Random.Range(p3_paper_min_time, p3_paper_max_time);
+		}
 		yield return new WaitForSeconds(delay);
 		SummonBoss();
 	}
 
 	IEnumerator SpawnDistraction() {
-		float delay = Random.Range(bubble_min_time, Mathf.Max(bubble_max_time - (0.18f * GameManager.Instance.customerServed), bubble_min_max_time));
+		float delay;
+		if (GameManager.Instance.customerServed <= p1_customers_upper_bound) {
+			delay = Random.Range(p1_bubble_min_time, p1_bubble_max_time);
+		} else if (GameManager.Instance.customerServed <= p2_customers_upper_bound) {
+			delay = Random.Range(p2_bubble_min_time, p2_bubble_max_time);
+		} else {
+			delay = Random.Range(p3_bubble_min_time, p3_bubble_max_time);
+		}
 		yield return new WaitForSeconds(delay);
 		if (bubble_count < max_bubbles) {
 			SpawnBubble(speeches[Random.Range(0, speeches.Length - 1)], new Vector2(Random.Range(-7f, 7f), Random.Range(-4f, 4f)));
