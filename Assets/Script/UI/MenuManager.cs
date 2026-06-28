@@ -10,79 +10,89 @@ public class MenuManager : MonoBehaviour
     public RectTransform creditPanel;
     public RectTransform settingsPanel;
 
-    public RectTransform background;
+    public Vector2 mainMenuCenter;
+    public Vector2 mainMenuLeft;
+    public Vector2 creditHiddenRight;
+    public Vector2 creditCenter;
+    public Vector2 creditHiddenLeft;
 
-    public Vector2 bgPositionMenu = new Vector2(0, 0);
-    public Vector2 bgPositionCredits = new Vector2(200, 0);   // tweak in Inspector
-    public Vector2 bgPositionSettings = new Vector2(-200, 0); // tweak in Inspector
+    [System.Serializable]
+    public class ParallaxLayer
+    {
+        public RectTransform layer;
+        public float speed = 1f;
+        private Vector2 restingPosition;
+        private bool initialized = false;
 
-    [Range(0f, 1f)]
-    public float bgParallaxSpeed = 0.3f;
+        public void CacheRestingPosition()
+        {
+            if (layer == null || initialized)
+                return;
 
-    public float tiltDegrees = 35f;
+            restingPosition = layer.anchoredPosition;
+            initialized = true;
+        }
+
+        public Vector2 RestingPosition => restingPosition;
+    }
+
+    public ParallaxLayer[] parallaxLayers;
+    public float parallaxDistance = 300f;
+    public float parallaxExtraDuration = 0.4f;
 
     private bool transitioning = false;
 
     void Start()
     {
-        creditPanel.anchoredPosition = new Vector2(2340, 0);
-        settingsPanel.anchoredPosition = new Vector2(-2528, 0);
+        creditPanel.anchoredPosition = creditHiddenRight;
 
-        if (background != null)
-            background.anchoredPosition = bgPositionMenu;
+        settingsPanel.anchoredPosition = creditHiddenLeft;
+
+        foreach (var p in parallaxLayers)
+            p.CacheRestingPosition();
     }
 
-    public void PlayGame() => SceneManager.LoadScene(gameSceneName);
+    public void PlayGame()
+    {
+        SceneManager.LoadScene(gameSceneName);
+    }
 
     public void QuitGame()
     {
         Application.Quit();
-    #if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-    #endif
+
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
     }
 
     public void OpenCredits()
-    { 
-        StopAllCoroutines(); 
-        StartCoroutine(OpenCreditsAnimation()); 
+    {
+        StopAllCoroutines();
+        StartCoroutine(OpenCreditsAnimation());
     }
-    public void ReturnFromCredits() 
-    { 
+
+    public void ReturnFromCredits()
+    {
         StopAllCoroutines();
         StartCoroutine(CloseCreditsAnimation());
     }
-    public void OpenSettings()      
-    { 
-        StopAllCoroutines(); 
-        StartCoroutine(OpenSettingsAnimation()); 
+
+    public void OpenSettings()
+    {
+        StopAllCoroutines();
+        StartCoroutine(OpenSettingsAnimation());
     }
+
     public void ReturnFromSettings()
-    { 
-        StopAllCoroutines(); 
-        StartCoroutine(CloseSettingsAnimation()); 
+    {
+        StopAllCoroutines();
+        StartCoroutine(CloseSettingsAnimation());
     }
 
-    IEnumerator SlideAndSpin(RectTransform panel, Vector2 from, Vector2 to, float duration, float tiltSign)
+    IEnumerator Slide(RectTransform panel, Vector2 from, Vector2 to, float duration)
     {
         float time = 0f;
-        while (time < duration)
-        {
-            float t = Mathf.SmoothStep(0, 1, time / duration);
-            panel.anchoredPosition = Vector2.Lerp(from, to, t);
-            float tiltT = Mathf.Sin(t * Mathf.PI);
-            panel.localRotation = Quaternion.Euler(0, tiltSign * tiltDegrees * tiltT, 0);
-            time += Time.deltaTime;
-            yield return null;
-        }
-        panel.anchoredPosition = to;
-        panel.localRotation = Quaternion.identity;
-    }
-
-    IEnumerator SlideWithBG(RectTransform panel, Vector2 from, Vector2 to, float duration, float tiltSign, Vector2 bgTarget)
-    {
-        float time = 0f;
-        Vector2 bgFrom = background != null ? background.anchoredPosition : Vector2.zero;
 
         while (time < duration)
         {
@@ -90,31 +100,88 @@ public class MenuManager : MonoBehaviour
 
             panel.anchoredPosition = Vector2.Lerp(from, to, t);
 
-            float tiltT = Mathf.Sin(t * Mathf.PI);
-            panel.localRotation = Quaternion.Euler(0, tiltSign * tiltDegrees * tiltT, 0);
-
-            if (background != null)
-                background.anchoredPosition = Vector2.Lerp(bgFrom, bgTarget, t);
-
             time += Time.deltaTime;
             yield return null;
         }
 
         panel.anchoredPosition = to;
-        panel.localRotation = Quaternion.identity;
-        if (background != null)
-            background.anchoredPosition = bgTarget;
+    }
+
+    IEnumerator PanParallax(float directionSign, float panelDuration)
+    {
+        float duration = panelDuration + parallaxExtraDuration;
+        float time = 0f;
+
+        while (time < duration)
+        {
+            float t = Mathf.SmoothStep(0, 1, time / duration);
+
+            foreach (var p in parallaxLayers)
+            {
+                if (p.layer == null)
+                    continue;
+
+                Vector2 pos = p.layer.anchoredPosition;
+                pos.x = p.RestingPosition.x + directionSign * parallaxDistance * p.speed * t;
+                p.layer.anchoredPosition = pos;
+            }
+
+            time += Time.deltaTime;
+            yield return null;
+        }
+    }
+
+    IEnumerator ReturnParallax(float panelDuration)
+    {
+        float duration = panelDuration + parallaxExtraDuration;
+        float time = 0f;
+
+        Vector2[] startPositions = new Vector2[parallaxLayers.Length];
+        for (int i = 0; i < parallaxLayers.Length; i++)
+            if (parallaxLayers[i].layer != null)
+                startPositions[i] = parallaxLayers[i].layer.anchoredPosition;
+
+        while (time < duration)
+        {
+            float t = Mathf.SmoothStep(0, 1, time / duration);
+
+            for (int i = 0; i < parallaxLayers.Length; i++)
+            {
+                var p = parallaxLayers[i];
+                if (p.layer == null)
+                    continue;
+
+                p.layer.anchoredPosition = Vector2.Lerp(startPositions[i], p.RestingPosition, t);
+            }
+
+            time += Time.deltaTime;
+            yield return null;
+        }
+
+        foreach (var p in parallaxLayers)
+            if (p.layer != null)
+                p.layer.anchoredPosition = p.RestingPosition;
     }
 
     IEnumerator OpenCreditsAnimation()
     {
         transitioning = true;
+
         float duration = 1.0f;
 
-        yield return SlideWithBG(menuPanel, menuPanel.anchoredPosition, 
-        new Vector2(-2340, 0), duration, -0.6f, bgPositionCredits);
-        yield return SlideAndSpin(creditPanel, creditPanel.anchoredPosition, 
-        new Vector2(-2340, 0), duration, -0.6f);
+        StartCoroutine(PanParallax(1f, duration));
+
+        Vector2 menuStart = menuPanel.anchoredPosition;
+        Vector2 menuTarget = new Vector2(-2340, 0);
+
+        yield return Slide(menuPanel, menuStart, menuTarget, duration);
+
+        yield return new WaitForSeconds(0.1f);
+
+        Vector2 creditStart = creditPanel.anchoredPosition;
+        Vector2 creditTarget = new Vector2(-2340, 0);
+
+        yield return Slide(creditPanel, creditStart, creditTarget, duration);
 
         transitioning = false;
     }
@@ -122,12 +189,22 @@ public class MenuManager : MonoBehaviour
     IEnumerator CloseCreditsAnimation()
     {
         transitioning = true;
+
         float duration = 1.0f;
 
-        yield return SlideAndSpin(creditPanel, creditPanel.anchoredPosition, 
-        new Vector2(2340, 0), duration, 1f);
-        yield return SlideWithBG(menuPanel, menuPanel.anchoredPosition,
-        Vector2.zero, duration, 1f, bgPositionMenu);
+        StartCoroutine(ReturnParallax(duration));
+
+        Vector2 creditStart = creditPanel.anchoredPosition;
+        Vector2 creditTarget = new Vector2(0, 0);
+
+        yield return Slide(creditPanel, creditStart, creditTarget, duration);
+
+        yield return new WaitForSeconds(0.1f);
+
+        Vector2 menuStart = menuPanel.anchoredPosition;
+        Vector2 menuTarget = Vector2.zero;
+
+        yield return Slide(menuPanel, menuStart, menuTarget, duration);
 
         transitioning = false;
     }
@@ -135,12 +212,22 @@ public class MenuManager : MonoBehaviour
     IEnumerator OpenSettingsAnimation()
     {
         transitioning = true;
+
         float duration = 1.0f;
 
-        yield return SlideWithBG(menuPanel, menuPanel.anchoredPosition, -
-        new Vector2(-2528, -100), duration, -0.6f, bgPositionSettings);
-        yield return SlideAndSpin(settingsPanel, settingsPanel.anchoredPosition, 
-        new Vector2(2528, -100), duration, -0.6f);
+        StartCoroutine(PanParallax(-1f, duration));
+
+        Vector2 menuStart = menuPanel.anchoredPosition;
+        Vector2 menuTarget = new Vector2(2528, 0);
+
+        yield return Slide(menuPanel, menuStart, menuTarget, duration);
+
+        yield return new WaitForSeconds(0.1f);
+
+        Vector2 settingsStart = settingsPanel.anchoredPosition;
+        Vector2 settingsTarget = new Vector2(2528, -100);
+
+        yield return Slide(settingsPanel, settingsStart, settingsTarget, duration);
 
         transitioning = false;
     }
@@ -148,12 +235,22 @@ public class MenuManager : MonoBehaviour
     IEnumerator CloseSettingsAnimation()
     {
         transitioning = true;
+
         float duration = 1.0f;
 
-        yield return SlideAndSpin(settingsPanel, settingsPanel.anchoredPosition, 
-        new Vector2(-2528, 0), duration, 1f);
-        yield return SlideWithBG(menuPanel, menuPanel.anchoredPosition, 
-        Vector2.zero, duration, 1f, bgPositionMenu);
+        StartCoroutine(ReturnParallax(duration));
+
+        Vector2 settingsStart = settingsPanel.anchoredPosition;
+        Vector2 settingsTarget = new Vector2(0, -100);
+
+        yield return Slide(settingsPanel, settingsStart, settingsTarget, duration);
+
+        yield return new WaitForSeconds(0.1f);
+
+        Vector2 menuStart = menuPanel.anchoredPosition;
+        Vector2 menuTarget = Vector2.zero;
+
+        yield return Slide(menuPanel, menuStart, menuTarget, duration);
 
         transitioning = false;
     }

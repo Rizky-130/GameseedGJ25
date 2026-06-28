@@ -4,29 +4,24 @@ using System.Collections;
 
 public class PauseMenuManager : MonoBehaviour
 {
-    [Header("References")]
     public RectTransform shutter;
     public RectTransform blackTintRect;
     public CanvasGroup pausePanelGroup;
 
-    [Header("Settings Shutter")]
     public RectTransform settingsShutter;
     public float settingsClosedY = 0f;
     public float settingsOpenY = 1000f;
     public bool settingsIsOpen = false;
 
-    [Header("Quit Confirmation")]
     public GameObject confirmation1;
     public GameObject confirmation2;
     public string titleScreenScene = "Title_Screen";
 
-    [Header("Shutter Movement")]
     public float closedY = 0f;
     public float openY = 1000f;
     public float shutterDuration = 0.35f;
     public AnimationCurve shutterCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
-    [Header("Impact Shake")]
     public Transform cameraTransform;
     public float shakeDuration = 0.15f;
     public float shakeStrength = 5f;
@@ -67,7 +62,14 @@ public class PauseMenuManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape) && !isAnimating)
         {
-            TogglePause();
+            if (settingsIsOpen)
+            {
+                OnSettingsBackPressed();
+            }
+            else
+            {
+                TogglePause();
+            }
         }
     }
 
