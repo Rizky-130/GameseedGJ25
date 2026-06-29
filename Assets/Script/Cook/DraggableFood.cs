@@ -40,6 +40,7 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
         if (food.foodIcon != null && foodImage != null)
             foodImage.sprite = food.foodIcon;
+            foodImage.color = Color.white;
 
         // pakai posisi pan langsung
         rectTransform.position = panRect.position;
@@ -109,7 +110,6 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         {
             if (isBurnt)
             {
-                GameManager.Instance.OnCustomerLeft();   // gosong dibuang → nyawa berkurang
                 Debug.Log("Makanan gosong dibuang! Nyawa berkurang.");
             }
             else

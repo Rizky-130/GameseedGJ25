@@ -6,6 +6,8 @@ public class CustomerSpawner : MonoBehaviour
     [Header("Prefab & Spawn")]
     public GameObject customerPrefab;
     public Transform[] customerSlots;
+    [Header("Menu Restoran")]
+    public RecipeData[] availableRecipes;
 
     [Header("Phase 1 - Awal (detik 0 - phase1Duration)")]
     public float phase1Duration = 60f;
@@ -97,8 +99,22 @@ public class CustomerSpawner : MonoBehaviour
             return;
         }
 
-        FoodType[] menu = { FoodType.BuritoMayatCincang, FoodType.SteakMinotaur, FoodType.TempuraUdangSungaiStyx };
-        c.orderFood = menu[Random.Range(0, menu.Length)];
+        if (availableRecipes != null && availableRecipes.Length > 0)
+        {
+            RecipeData pesanan = availableRecipes[Random.Range(0, availableRecipes.Length)];
+
+            c.orderFood = pesanan.resultFood;          // Set data makanannya
+
+            if (c.orderIconImage != null)
+            {
+                c.orderIconImage.sprite = pesanan.foodIcon; // Set gambar iconnya
+                c.orderIconImage.color = Color.white;       // Pastikan warnanya tidak gelap
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Daftar resep di Spawner masih kosong!");
+        }
         c.waitTime = GetCurrentWaitTime();
         c.slotIndex = slotIndex;
         c.spawner = this;

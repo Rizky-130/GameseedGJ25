@@ -67,21 +67,47 @@ public class MangkokRacik : MonoBehaviour, IDropHandler, IBeginDragHandler, IDra
     // ========================
     public void OnDrop(PointerEventData eventData)
     {
-        if (isCooking || isReady) return;
+        Debug.Log("DROP");
 
+        Debug.Log(eventData.pointerDrag);
+
+        if (eventData.pointerDrag != null)
+            Debug.Log(eventData.pointerDrag.name);
+        // 1. Cek apakah Mangkok mendeteksi ada benda yang dijatuhkan
+        Debug.Log("Sesuatu dijatuhkan ke Mangkok! Object: " + (eventData.pointerDrag != null ? eventData.pointerDrag.name : "Kosong"));
+
+        // 2. Cek apakah Mangkok sedang terkunci (lagi masak/matang)
+        if (isCooking || isReady)
+        {
+            Debug.Log("❌ Gagal: Mangkok masih memproses masakan (isCooking/isReady = true).");
+            return;
+        }
+
+        // 3. Cek apakah benda yang dijatuhkan punya script DraggableIngredient
         DraggableIngredient ingredient = eventData.pointerDrag?.GetComponent<DraggableIngredient>();
-        if (ingredient == null) return;
+        if (ingredient == null)
+        {
+            Debug.Log("❌ Gagal: Benda yang dijatuhkan tidak memiliki script 'DraggableIngredient'!");
+            return;
+        }
+
+        // 4. Cek apakah Data Bahan sudah diisi di Inspector
+        if (ingredient.ingredientData == null)
+        {
+            Debug.LogError("❌ ERROR: Script bahan ada, TAPI slot 'Ingredient Data' di Inspector kosong! Isi dulu data bahannya.");
+            return;
+        }
 
         FoodType tipe = ingredient.ingredientData.IngredientType;
 
         if (bahanMasuk.Contains(tipe))
         {
-            Debug.Log("Bahan sudah ada di mangkok!");
+            Debug.Log("⚠️ Bahan sudah ada di mangkok!");
             return;
         }
 
         bahanMasuk.Add(tipe);
-        Debug.Log("Bahan masuk: " + ingredient.ingredientData.IngredientName + " (" + bahanMasuk.Count + " bahan)");
+        Debug.Log("✅ Bahan berhasil masuk: " + ingredient.ingredientData.IngredientName + " (" + bahanMasuk.Count + " bahan)");
 
         UpdateVisual();
         CekTampilTombolRacik();

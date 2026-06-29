@@ -41,6 +41,7 @@ public class DraggableIngredient : MonoBehaviour, IBeginDragHandler, IDragHandle
 
         CanvasGroup cg = dragVisual.AddComponent<CanvasGroup>();
         cg.blocksRaycasts = false; // supaya drop target bisa kedeteksi
+        Debug.Log("BEGIN");
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -54,10 +55,12 @@ public class DraggableIngredient : MonoBehaviour, IBeginDragHandler, IDragHandle
             out Vector2 localPoint
         );
         dragVisualRect.localPosition = localPoint;
+        Debug.Log("DRAG");
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        Debug.Log("END");
         if (dragVisual != null)
             Destroy(dragVisual);
     }

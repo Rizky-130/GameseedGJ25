@@ -16,13 +16,31 @@ public class Customer : MonoBehaviour
     private bool isWaiting = true;
 
     [Header("UI Referensi")]
-    public TextMeshProUGUI orderText;
+    public Image orderIconImage;
     public Image timerBar;
+    [Header("Visual Pelanggan")]
+    public Image customerImage;          // Komponen Image yang menampilkan karakter
+    public Sprite[] customerSprites;
 
     void Start()
     {
+        if (customerImage != null && customerSprites != null && customerSprites.Length > 0)
+        {
+            int randomIndex = Random.Range(0, customerSprites.Length);
+            customerImage.sprite = customerSprites[randomIndex];
+            
+            // Opsional: Set warna ke putih murni agar sprite aslinya tidak berubah warna
+            customerImage.color = Color.white; 
+        }
+
+        if (customerImage != null && customerSprites != null && customerSprites.Length > 0)
+        {
+            int randomIndex = Random.Range(0, customerSprites.Length);
+            customerImage.sprite = customerSprites[randomIndex];
+            customerImage.color = Color.white; 
+        }
+
         currentTime = waitTime;
-        orderText.text = orderFood.ToString();
 
         // hubungkan tombol tap pelanggan
         Button btn = GetComponent<Button>();
