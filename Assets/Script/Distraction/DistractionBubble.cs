@@ -22,7 +22,8 @@ public class DistractionBubble : MonoBehaviour {
 	void Update() {
 		// Tween scale start
 		if (!start) {
-			this.transform.localScale = Vector2.Lerp(this.transform.localScale, Vector2.one, 0.05f);
+			this.transform.localScale = Vector2.Lerp(this.transform.localScale, Vector2.one, 8f * Time.deltaTime);
+			// this.transform.localScale = Vector2.MoveTowards(this.transform.localScale, Vector2.one, 5f * Time.deltaTime);
 		}
 		if (this.transform.localScale.x > 0.99f && !start) {
 			this.transform.localScale = Vector2.one;
@@ -36,7 +37,8 @@ public class DistractionBubble : MonoBehaviour {
 
 		// Tween scale end
 		if (end) {
-			this.transform.localScale = Vector2.Lerp(this.transform.localScale, Vector2.zero, 0.05f);
+			this.transform.localScale = Vector2.Lerp(this.transform.localScale, Vector2.zero, 8f * Time.deltaTime);
+			// this.transform.localScale = Vector2.MoveTowards(this.transform.localScale, Vector2.zero, 5f * Time.deltaTime);
 		}
 		if (this.transform.localScale.x < 0.01f && end) {
 			Destroy(this.gameObject);

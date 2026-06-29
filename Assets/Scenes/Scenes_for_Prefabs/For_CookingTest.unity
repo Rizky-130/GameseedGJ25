@@ -432,21 +432,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3484113875197905383, guid: 85b32e177458fc24ea9b63ff283294eb, type: 3}
-      propertyPath: m_Color.b
-      value: 0.15267348
+    - target: {fileID: 3736374780366501224, guid: 85b32e177458fc24ea9b63ff283294eb, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -2
       objectReference: {fileID: 0}
-    - target: {fileID: 3484113875197905383, guid: 85b32e177458fc24ea9b63ff283294eb, type: 3}
-      propertyPath: m_Color.g
-      value: 0.15267348
+    - target: {fileID: 3736374780366501224, guid: 85b32e177458fc24ea9b63ff283294eb, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.4
       objectReference: {fileID: 0}
-    - target: {fileID: 3484113875197905383, guid: 85b32e177458fc24ea9b63ff283294eb, type: 3}
-      propertyPath: m_Color.r
-      value: 0.15471691
-      objectReference: {fileID: 0}
-    - target: {fileID: 3484113875197905383, guid: 85b32e177458fc24ea9b63ff283294eb, type: 3}
+    - target: {fileID: 4075708897696925763, guid: 85b32e177458fc24ea9b63ff283294eb, type: 3}
       propertyPath: m_SortingOrder
-      value: 10
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 4324050381604154602, guid: 85b32e177458fc24ea9b63ff283294eb, type: 3}
       propertyPath: m_Layer
@@ -476,9 +472,17 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 6492695172547238697, guid: 85b32e177458fc24ea9b63ff283294eb, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6697502502616646658, guid: 85b32e177458fc24ea9b63ff283294eb, type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8745764187658441737, guid: 85b32e177458fc24ea9b63ff283294eb, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2661,10 +2665,6 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 0.08679241
       objectReference: {fileID: 0}
-    - target: {fileID: 7253891753283818335, guid: d4d75a95e05fce94bbcebc6eb7e67f97, type: 3}
-      propertyPath: m_SortingOrder
-      value: 10
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3716,11 +3716,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3648739941560078293, guid: 16d805ea5f3092d4aaa4be708a867dc9, type: 3}
       propertyPath: phase1SpawnInterval
-      value: 5
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3648739941560078293, guid: 16d805ea5f3092d4aaa4be708a867dc9, type: 3}
       propertyPath: phase2SpawnInterval
-      value: 5
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3648739941560078293, guid: 16d805ea5f3092d4aaa4be708a867dc9, type: 3}
       propertyPath: phase3WaitTimeStart
@@ -3728,11 +3728,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3648739941560078293, guid: 16d805ea5f3092d4aaa4be708a867dc9, type: 3}
       propertyPath: phase3SpawnIntervalMin
-      value: 5
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3648739941560078293, guid: 16d805ea5f3092d4aaa4be708a867dc9, type: 3}
       propertyPath: phase3SpawnIntervalStart
-      value: 5
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3648739941560078293, guid: 16d805ea5f3092d4aaa4be708a867dc9, type: 3}
       propertyPath: availableRecipes.Array.size

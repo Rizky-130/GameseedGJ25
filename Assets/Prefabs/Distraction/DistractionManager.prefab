@@ -44,23 +44,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d128ee28821a9042b1093c8a686c232, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bubble_prefab: {fileID: 1900279613096922216, guid: 0ded2369dc0c6124cbb1ca1ba7e1c3d7, type: 3}
+  bubble_prefabs:
+  - {fileID: 1900279613096922216, guid: 0ded2369dc0c6124cbb1ca1ba7e1c3d7, type: 3}
+  - {fileID: 1900279613096922216, guid: 83e9c1fd4e7e74c4b9af2bf75997b674, type: 3}
+  - {fileID: 1900279613096922216, guid: cf9d74b87791eb7449d3942e8f379cdb, type: 3}
   distraction_paper: {fileID: 0}
   boss: {fileID: 0}
+  p1_customers_upper_bound: 15
+  p2_customers_upper_bound: 30
   time_until_game_over: 30
   paper_start_y: 10
-  paper_min_time: 8
-  paper_max_time: 30
-  paper_min_max_time: 12
+  p1_paper_min_time: 15
+  p1_paper_max_time: 30
+  p2_paper_min_time: 12
+  p2_paper_max_time: 28
+  p3_paper_min_time: 9
+  p3_paper_max_time: 22
   speeches:
   - I heard the food sucks!
   - I'm HUNGRY.
   - This place STINKS.
   - Can't you cook any faster?
   - Be quick! Or I'll just eat you instead.
-  bubble_min_time: 4
-  bubble_max_time: 15
-  bubble_min_max_time: 6
+  p1_bubble_min_time: 10
+  p1_bubble_max_time: 20
+  p2_bubble_min_time: 8
+  p2_bubble_max_time: 18
+  p3_bubble_min_time: 7
+  p3_bubble_max_time: 18
   max_bubbles: 6
   bubble_count: 0
-  cust: 0

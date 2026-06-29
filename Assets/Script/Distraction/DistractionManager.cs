@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class DistractionManager : MonoBehaviour {
 	public static DistractionManager Instance { get; private set; }
 
-	[SerializeField] private GameObject bubble_prefab;
+	[SerializeField] private GameObject[] bubble_prefabs;
 	[SerializeField] private GameObject distraction_paper;
 	[SerializeField] private GameObject boss;
 
@@ -54,8 +54,8 @@ public class DistractionManager : MonoBehaviour {
 			distraction_paper = GameObject.Find("DistractionPaper");
 		}
 		stamp = distraction_paper.transform.GetChild(0).GetComponent<Stamp>();
-		timer_bg = distraction_paper.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject;
-		timer_fill = timer_bg.transform.GetChild(0).gameObject;
+		timer_fill = distraction_paper.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject;
+		timer_bg = timer_fill.transform.GetChild(0).gameObject;
 		stamped = distraction_paper.transform.GetChild(2).gameObject;
 		distraction_paper.transform.position = new Vector2(0, paper_start_y);
 
@@ -63,6 +63,7 @@ public class DistractionManager : MonoBehaviour {
 	}
 
 	IEnumerator StartSpawningDistractions() {
+		// TEMP
 		yield return new WaitForSeconds(45);
 		StartCoroutine(WaitForBoss());
 		StartCoroutine(SpawnDistraction());
@@ -92,19 +93,17 @@ public class DistractionManager : MonoBehaviour {
 		if (is_paper_shown) {
 			time_remaining -= Time.deltaTime;
 			if (time_remaining < 0) {
-				// TEMP
 				Debug.Log("ADD GAMEOVER HERE");
+				// TEMP
+				// GameOverManager.Instance.ShowGameOver();
 			}
 		}
 
-		timer_fill.GetComponent<RectTransform>().sizeDelta = new Vector2(
-			timer_fill.GetComponent<RectTransform>().sizeDelta.x,
-			time_remaining / time_until_game_over * timer_bg.GetComponent<RectTransform>().sizeDelta.y
-		);
+		timer_fill.GetComponent<Image>().fillAmount = 1 - (time_remaining / time_until_game_over);
 	}
 
 	public void SpawnBubble(string text, Vector2 position) {
-		GameObject bubble = Instantiate(bubble_prefab, position, Quaternion.identity);
+		GameObject bubble = Instantiate(bubble_prefabs[Random.Range(0, bubble_prefabs.Length)], position, Quaternion.identity);
 		bubble.GetComponent<DistractionBubble>().text_to_display = text;
 		int index = Random.Range(1, 7);
 		bubble.GetComponent<SpriteRenderer>().sortingOrder = index;
@@ -162,7 +161,7 @@ public class DistractionManager : MonoBehaviour {
 		}
 		yield return new WaitForSeconds(delay);
 		if (bubble_count < max_bubbles) {
-			SpawnBubble(speeches[Random.Range(0, speeches.Length - 1)], new Vector2(Random.Range(-7f, 7f), Random.Range(-4f, 4f)));
+			SpawnBubble(speeches[Random.Range(0, speeches.Length - 1)], new Vector2(Random.Range(-7f, 7f), Random.Range(-3f, 3f)));
 		} else {
 			StartCoroutine(SpawnDistraction());
 		}
