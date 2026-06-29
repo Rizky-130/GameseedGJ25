@@ -11,10 +11,13 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/Scenes_for_Prefabs/GameOver.unity
     guid: 5cf376165c6b23f4184ad8c161d2ca5b
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/Title_Screen.unity
     guid: 523b0489cd8fffd4396f6fbcaca27db8
   - enabled: 1
     path: Assets/Scenes/Scenes_for_Prefabs/For_CookingTest.unity
     guid: 9c6f855e88f6bbb4b83d58d559b8c4dc
+  - enabled: 1
+    path: Assets/Scenes/Tutorial.unity
+    guid: c6da6f8500d197f40b195ca5b29089fe
   m_configObjects: {}

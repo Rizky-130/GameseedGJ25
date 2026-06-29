@@ -52,5 +52,8 @@ public class GameManager : MonoBehaviour
     void GameOver()
     {
         Debug.Log("GameOver");
+
+            if (GameOverManager.Instance != null)
+            GameOverManager.Instance.ShowGameOver();
     }
 }

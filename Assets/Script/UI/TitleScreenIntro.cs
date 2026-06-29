@@ -1,37 +1,62 @@
-using TMPro;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
+using System.Collections;
 
 public class TitleScreenIntro : MonoBehaviour
 {
+    [Header("Splash Logo")]
     public TextMeshProUGUI logoText;
     public Image blackOverlay;
     public float revealDuration = 0.6f;
     public float logoHoldDuration = 1.5f;
     public float logoFadeOutDuration = 0.6f;
 
+    [Header("Menu Slide-In")]
     public RectTransform menuPanel;
     public float menuSlideDuration = 0.5f;
     public float menuOffscreenOffsetX = -1200f;
     public AnimationCurve menuSlideCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
+    [Header("MC Slide + Color Reveal")]
     public Image mcImage;
-    public int mcFlickerCount = 5;
-    public float mcFlickerInterval = 0.08f;
+    public RectTransform mcRectTransform;
+    public float mcSlideDuration = 0.5f;
+    public float mcOffscreenOffsetY = -400f;
+    public float mcColorRevealDuration = 0.6f;
 
+    [Header("Buttons Stagger Fade-In")]
     public CanvasGroup btnPlayGroup;
     public CanvasGroup btnCreditGroup;
     public CanvasGroup btnQuitGroup;
     public float buttonFadeDuration = 0.3f;
     public float buttonStaggerDelay = 0.2f;
 
+    [Header("Settings Slide-In")]
     public RectTransform settingsButton;
     public float settingsSlideDuration = 0.5f;
     public float settingsOffscreenOffsetX = 1200f;
 
+    [Header("Ghost Pop-In")]
+    public RectTransform ghost1;
+    public RectTransform ghost2;
+    public float ghostPopDuration = 0.4f;
+    public float ghostStaggerDelay = 0.25f;
+    public AnimationCurve ghostPopCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+
+    public Vector2 ghost1StartOffset = new Vector2(40f, -150f);
+    public Vector2 ghost1ControlOffset = new Vector2(-80f, -80f);
+
+    public Vector2 ghost2StartOffset = new Vector2(-40f, -150f);
+    public Vector2 ghost2ControlOffset = new Vector2(80f, -80f);
+
+    [Header("Ghost Idle Sway")]
+    public float swayAmount = 15f;
+    public float swaySpeed = 1.5f;
+
     private float menuRestingX;
     private float settingsRestingX;
+    private float mcRestingY;
 
     void Start()
     {
@@ -60,9 +85,18 @@ public class TitleScreenIntro : MonoBehaviour
 
         if (mcImage != null)
         {
-            Color c = mcImage.color;
-            c.a = 0f;
+            Color c = Color.black;
+            c.a = 1f;
             mcImage.color = c;
+        }
+
+        if (mcRectTransform != null)
+        {
+            mcRestingY = mcRectTransform.anchoredPosition.y;
+
+            Vector2 pos = mcRectTransform.anchoredPosition;
+            pos.y = mcRestingY + mcOffscreenOffsetY;
+            mcRectTransform.anchoredPosition = pos;
         }
 
         SetButtonHidden(btnPlayGroup);
@@ -77,6 +111,12 @@ public class TitleScreenIntro : MonoBehaviour
             pos.x = settingsRestingX + settingsOffscreenOffsetX;
             settingsButton.anchoredPosition = pos;
         }
+
+        if (ghost1 != null)
+            ghost1.localScale = Vector3.zero;
+
+        if (ghost2 != null)
+            ghost2.localScale = Vector3.zero;
 
         StartCoroutine(PlayIntroSequence());
     }
@@ -95,7 +135,7 @@ public class TitleScreenIntro : MonoBehaviour
     {
         if (blackOverlay != null)
         {
-            yield return FadeGraphicAlpha(blackOverlay, 2f, 0f, revealDuration);
+            yield return FadeGraphicAlpha(blackOverlay, 1f, 0f, revealDuration);
         }
 
         yield return new WaitForSeconds(logoHoldDuration);
@@ -107,37 +147,129 @@ public class TitleScreenIntro : MonoBehaviour
 
         yield return SlideMenuIn();
 
-        yield return FlickerMC();
+        yield return SlideMCUp();
+
+        yield return RevealMCColor();
+
+        yield return PopInGhosts();
+
+        StartCoroutine(SwayGhost(ghost1));
+        StartCoroutine(SwayGhost(ghost2));
 
         yield return FadeInButtonsStaggered();
 
         yield return SlideSettingsIn();
     }
 
-    IEnumerator FlickerMC()
+    IEnumerator SlideMCUp()
+    {
+        if (mcRectTransform == null)
+            yield break;
+
+        float startY = mcRectTransform.anchoredPosition.y;
+        float timer = 0f;
+
+        while (timer < mcSlideDuration)
+        {
+            timer += Time.deltaTime;
+            float t = menuSlideCurve.Evaluate(Mathf.Clamp01(timer / mcSlideDuration));
+
+            Vector2 pos = mcRectTransform.anchoredPosition;
+            pos.y = Mathf.Lerp(startY, mcRestingY, t);
+            mcRectTransform.anchoredPosition = pos;
+
+            yield return null;
+        }
+
+        Vector2 finalPos = mcRectTransform.anchoredPosition;
+        finalPos.y = mcRestingY;
+        mcRectTransform.anchoredPosition = finalPos;
+    }
+
+    IEnumerator RevealMCColor()
     {
         if (mcImage == null)
             yield break;
 
-        for (int i = 0; i < mcFlickerCount; i++)
-        {
-            SetGraphicAlpha(mcImage, 1f);
-            yield return new WaitForSeconds(mcFlickerInterval);
+        float timer = 0f;
 
-            SetGraphicAlpha(mcImage, 0f);
-            yield return new WaitForSeconds(mcFlickerInterval);
+        while (timer < mcColorRevealDuration)
+        {
+            timer += Time.deltaTime;
+            float t = Mathf.Clamp01(timer / mcColorRevealDuration);
+
+            Color c = Color.Lerp(Color.black, Color.white, t);
+            c.a = 1f;
+            mcImage.color = c;
+
+            yield return null;
         }
 
-        SetGraphicAlpha(mcImage, 1f);
+        mcImage.color = Color.white;
     }
 
-    void SetGraphicAlpha(Graphic graphic, float a)
+    IEnumerator PopInGhosts()
     {
-        Color c = graphic.color;
-        c.a = a;
-        graphic.color = c;
+        yield return PopInGhost(ghost1, ghost1StartOffset, ghost1ControlOffset);
+        yield return new WaitForSeconds(ghostStaggerDelay);
+        yield return PopInGhost(ghost2, ghost2StartOffset, ghost2ControlOffset);
     }
 
+    IEnumerator PopInGhost(RectTransform ghost, Vector2 startOffset, Vector2 controlOffset)
+    {
+        if (ghost == null)
+            yield break;
+
+        Vector2 restingPos = ghost.anchoredPosition;
+        Vector2 startPos = restingPos + startOffset;
+        Vector2 controlPos = restingPos + controlOffset;
+
+        ghost.anchoredPosition = startPos;
+        ghost.localScale = Vector3.zero;
+
+        float timer = 0f;
+
+        while (timer < ghostPopDuration)
+        {
+            timer += Time.deltaTime;
+            float t = ghostPopCurve.Evaluate(Mathf.Clamp01(timer / ghostPopDuration));
+
+            ghost.anchoredPosition = QuadraticBezier(startPos, controlPos, restingPos, t);
+            ghost.localScale = Vector3.one * t;
+
+            yield return null;
+        }
+
+        ghost.anchoredPosition = restingPos;
+        ghost.localScale = Vector3.one;
+    }
+
+    Vector2 QuadraticBezier(Vector2 a, Vector2 control, Vector2 b, float t)
+    {
+        Vector2 ac = Vector2.Lerp(a, control, t);
+        Vector2 cb = Vector2.Lerp(control, b, t);
+        return Vector2.Lerp(ac, cb, t);
+    }
+
+    IEnumerator SwayGhost(RectTransform ghost)
+    {
+        if (ghost == null)
+            yield break;
+
+        float baseX = ghost.anchoredPosition.x;
+        float seed = Random.Range(0f, Mathf.PI * 2f);
+
+        while (true)
+        {
+            float offsetX = Mathf.Sin(Time.time * swaySpeed + seed) * swayAmount;
+
+            Vector2 pos = ghost.anchoredPosition;
+            pos.x = baseX + offsetX;
+            ghost.anchoredPosition = pos;
+
+            yield return null;
+        }
+    }
     IEnumerator FadeInButtonsStaggered()
     {
         yield return FadeInButton(btnPlayGroup);

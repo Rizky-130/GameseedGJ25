@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class CookBookPanel : MonoBehaviour
 {
@@ -63,6 +64,8 @@ public class CookBookPanel : MonoBehaviour
         panel.gameObject.SetActive(true);
         overlayImage.gameObject.SetActive(true);
 
+        ClearSelection();
+
         if (_activeCoroutine != null) StopCoroutine(_activeCoroutine);
         _activeCoroutine = StartCoroutine(Animate(true));
     }
@@ -71,8 +74,16 @@ public class CookBookPanel : MonoBehaviour
     {
         _isOpen = false;
 
+        ClearSelection();
+
         if (_activeCoroutine != null) StopCoroutine(_activeCoroutine);
         _activeCoroutine = StartCoroutine(Animate(false));
+    }
+
+    private void ClearSelection()
+    {
+        if (EventSystem.current != null)
+            EventSystem.current.SetSelectedGameObject(null);
     }
 
     private IEnumerator Animate(bool open)
