@@ -5,12 +5,17 @@ using UnityEngine;
 public class Stamp : MonoBehaviour {
 	[SerializeField] private float x_size = 7.85f;
 	[SerializeField] private float y_size = 4f;
-	public Vector3 start_pos;
 
+	private AudioSource audio_source;
 	private Vector3 mouse_position_offset;
 	private bool can_stamp = false;
-	public bool can_drag = false;
 	private bool is_offscreen = false;
+	public bool can_drag = false;
+	public Vector3 start_pos;
+
+	void Start() {
+		audio_source = GetComponent<AudioSource>();
+	}
 
 	private Vector3 GetMouseWorldPosition() {
 		return Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -34,6 +39,7 @@ public class Stamp : MonoBehaviour {
 			can_stamp = false;
 			can_drag = false;
 			DistractionManager.Instance.Stamp();
+			audio_source.Play();
 		}
 		if (is_offscreen && can_drag) {
 			transform.localPosition = start_pos;

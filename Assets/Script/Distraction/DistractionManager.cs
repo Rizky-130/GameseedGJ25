@@ -38,9 +38,12 @@ public class DistractionManager : MonoBehaviour {
 	[SerializeField] private int max_bubbles = 6;
 	public int bubble_count = 0;
 
+	private AudioSource audio_source;
 	private GameObject stamped;
 	private GameObject timer_bg;
 	private GameObject timer_fill;
+	private bool can_play_on_enter = true;
+	private bool can_play_on_exit = true;
 	private Stamp stamp;
 	private bool can_tween = false;
 	private bool is_tween_reversed = false;
@@ -55,6 +58,7 @@ public class DistractionManager : MonoBehaviour {
 		if (!distraction_paper) {
 			distraction_paper = GameObject.Find("DistractionPaper");
 		}
+		audio_source = GetComponent<AudioSource>();
 		stamp = distraction_paper.transform.GetChild(0).GetComponent<Stamp>();
 		timer_fill = distraction_paper.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject;
 		timer_bg = timer_fill.transform.GetChild(0).gameObject;
@@ -75,19 +79,29 @@ public class DistractionManager : MonoBehaviour {
 		if (can_tween) {
 			if (!is_tween_reversed) {
 				distraction_paper.transform.position = Vector2.Lerp(distraction_paper.transform.position, new Vector2(0, end_y), 5f * Time.deltaTime);
+				if (distraction_paper.transform.position.y < paper_start_y / 2 && can_play_on_enter) {
+					audio_source.Play();
+					can_play_on_enter = false;
+				}
 				if (distraction_paper.transform.position.y < end_y + 0.02) {
 					distraction_paper.transform.position = new Vector2(0, end_y);
 					stamp.can_drag = true;
 					can_tween = false;
 					time_remaining = time_until_game_over;
 					is_paper_shown = true;
+					can_play_on_enter = true;
 				}
 			} else {
 				distraction_paper.transform.position = Vector2.Lerp(distraction_paper.transform.position, new Vector2(0, paper_start_y), 5f * Time.deltaTime);
+				if (distraction_paper.transform.position.y > paper_start_y / 2 && can_play_on_exit) {
+					audio_source.Play();
+					can_play_on_exit = false;
+				}
 				if (distraction_paper.transform.position.y > paper_start_y - 0.02) {
 					distraction_paper.transform.position = new Vector2(0, paper_start_y);
 					stamp.transform.localPosition = stamp.start_pos;
 					can_tween = false;
+					can_play_on_exit = true;
 				}
 			}
 		}
