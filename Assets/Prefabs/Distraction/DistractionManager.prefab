@@ -53,6 +53,7 @@ MonoBehaviour:
   p1_customers_upper_bound: 15
   p2_customers_upper_bound: 30
   time_until_game_over: 30
+  time_remaining: 30
   paper_start_y: 10
   p1_paper_min_time: 15
   p1_paper_max_time: 30

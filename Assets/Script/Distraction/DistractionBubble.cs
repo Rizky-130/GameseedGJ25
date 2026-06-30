@@ -6,7 +6,9 @@ using TMPro;
 public class DistractionBubble : MonoBehaviour {
 	[SerializeField] private TextMeshProUGUI speech_text;
 	[SerializeField] private GameObject close_button;
+	[SerializeField] private AudioClip distracting_sound;
 
+	private AudioSource audio_source;
 	private bool start = false;
 	private bool end = false;
 	public string text_to_display = "Test text text text text text text text text text text";
@@ -17,6 +19,8 @@ public class DistractionBubble : MonoBehaviour {
 		close_button.SetActive(false);
 		speech_text.text = "";
 		DistractionManager.Instance.bubble_count++;
+		audio_source = GetComponent<AudioSource>();
+		audio_source.PlayOneShot(distracting_sound);
 	}
 
 	void Update() {
@@ -64,6 +68,7 @@ public class DistractionBubble : MonoBehaviour {
 	}
 
 	public void CloseBubble() {
+		audio_source.Play();
 		Destroy(close_button.gameObject);
 		Destroy(speech_text.gameObject);
 		end = true;

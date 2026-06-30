@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Stamp : MonoBehaviour {
+	[SerializeField] private float x_size = 7.85f;
+	[SerializeField] private float y_size = 4f;
 	public Vector3 start_pos;
 
 	private Vector3 mouse_position_offset;
@@ -22,7 +24,8 @@ public class Stamp : MonoBehaviour {
 
 	private void OnMouseDrag() {
 		if (can_drag) {
-			transform.position = GetMouseWorldPosition() + mouse_position_offset;
+			Vector3 unclamped = GetMouseWorldPosition() + mouse_position_offset;
+			transform.position = new Vector3(Mathf.Clamp(unclamped.x, -x_size, x_size), Mathf.Clamp(unclamped.y, -y_size, y_size), unclamped.z);
 		}
 	}
 

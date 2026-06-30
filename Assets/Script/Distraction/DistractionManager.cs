@@ -15,6 +15,7 @@ public class DistractionManager : MonoBehaviour {
 
 	[Header("Paper")]
 	[SerializeField] private float time_until_game_over = 30;//s
+	[SerializeField] private float time_remaining = 30;
 	[SerializeField] private float paper_start_y = 10;
 
 	[SerializeField] private float p1_paper_min_time = 15;//s
@@ -26,6 +27,8 @@ public class DistractionManager : MonoBehaviour {
 
 	[Header("Bubble")]
 	[SerializeField] private string[] speeches;
+	[SerializeField] private float bubble_min_x_distance = 2f;
+	[SerializeField] private float bubble_min_y_distance = 1.5f;
 	[SerializeField] private float p1_bubble_min_time = 10;//s
 	[SerializeField] private float p1_bubble_max_time = 20;//s
 	[SerializeField] private float p2_bubble_min_time = 8;//s
@@ -42,7 +45,6 @@ public class DistractionManager : MonoBehaviour {
 	private bool can_tween = false;
 	private bool is_tween_reversed = false;
 	private float end_y = 0;
-	private float time_remaining = 30;
 	private bool is_paper_shown = false;
 
 	void Awake() {
@@ -54,7 +56,7 @@ public class DistractionManager : MonoBehaviour {
 			distraction_paper = GameObject.Find("DistractionPaper");
 		}
 		stamp = distraction_paper.transform.GetChild(0).GetComponent<Stamp>();
-		timer_fill = distraction_paper.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject;
+		timer_fill = distraction_paper.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject;
 		timer_bg = timer_fill.transform.GetChild(0).gameObject;
 		stamped = distraction_paper.transform.GetChild(2).gameObject;
 		distraction_paper.transform.position = new Vector2(0, paper_start_y);
@@ -64,7 +66,7 @@ public class DistractionManager : MonoBehaviour {
 
 	IEnumerator StartSpawningDistractions() {
 		// TEMP
-		yield return new WaitForSeconds(45);
+		yield return new WaitForSeconds(1);
 		StartCoroutine(WaitForBoss());
 		StartCoroutine(SpawnDistraction());
 	}
@@ -160,10 +162,34 @@ public class DistractionManager : MonoBehaviour {
 			delay = Random.Range(p3_bubble_min_time, p3_bubble_max_time);
 		}
 		yield return new WaitForSeconds(delay);
+
 		if (bubble_count < max_bubbles) {
-			SpawnBubble(speeches[Random.Range(0, speeches.Length - 1)], new Vector2(Random.Range(-7f, 7f), Random.Range(-3f, 3f)));
+			Vector2 bubble_pos;
+			bool is_valid_pos;
+			int attempts = 0;
+			do {
+				is_valid_pos = true;
+				bubble_pos = new Vector2(Random.Range(-7f, 7f), Random.Range(-3f, 3f));
+				GameObject[] spawned_bubbles = GameObject.FindGameObjectsWithTag("DistractionBubble");
+				for (int i = 0; i < spawned_bubbles.Length; i++) {
+					if (Mathf.Abs(bubble_pos.x - spawned_bubbles[i].transform.position.x) < bubble_min_x_distance ||
+						Mathf.Abs(bubble_pos.y - spawned_bubbles[i].transform.position.y) < bubble_min_y_distance) {
+						is_valid_pos = false;
+						break;
+					}
+				}
+				attempts++;
+			} while (!is_valid_pos && attempts < 20);
+			if (is_valid_pos) {
+				SpawnBubble(speeches[Random.Range(0, speeches.Length)], bubble_pos);
+				Debug.Log("Valid Position Found");
+			} else {
+				StartCoroutine(SpawnDistraction());
+				Debug.Log("Retrying Spawning Bubble...");
+			}
 		} else {
 			StartCoroutine(SpawnDistraction());
+			Debug.Log("Can't Spawn Any More Bubbles");
 		}
 	}
 }
