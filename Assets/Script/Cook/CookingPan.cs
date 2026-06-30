@@ -9,6 +9,8 @@ public class CookingPan : MonoBehaviour
 
     [Header("Audio")]
     public AudioSource masakAudio;
+    public AudioClip gosomg;
+    public AudioClip matang;
 
     [Header("Timer")]
     private float cookTimer;
@@ -73,6 +75,8 @@ public class CookingPan : MonoBehaviour
                 progressBar.fillAmount = 1;
                 cookTimer = overcookTime;
                 UpdateVisual();
+                masakAudio.PlayOneShot(matang);
+
             }
         }
         else if (state == CookState.Ready)
@@ -85,7 +89,9 @@ public class CookingPan : MonoBehaviour
                 state = CookState.Overcooked;
                 if (masakAudio != null && masakAudio.isPlaying)
                 {
-                    masakAudio.Stop();
+                    // masakAudio.Stop();
+                    masakAudio.PlayOneShot(gosomg);
+
                 }
                 UpdateVisual(); // Ini akan menghentikan animasi & ganti ke panci kosong
             }

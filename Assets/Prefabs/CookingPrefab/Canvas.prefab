@@ -336,7 +336,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -168.26, y: 152.45}
+  m_AnchoredPosition: {x: -157.76001, y: 266}
   m_SizeDelta: {x: 197.23999, y: 136.22}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &7860502993695514011
@@ -352,8 +352,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ingredientData: {fileID: 11400000, guid: 32fe5178ea5e0da4fb5a5c07daa771fc, type: 2}
-  dragAudioSource: {fileID: 0}
-  dragStartClip: {fileID: 0}
 --- !u!1 &566263798357264790
 GameObject:
   m_ObjectHideFlags: 0
@@ -596,6 +594,7 @@ MonoBehaviour:
   bahanMasuk: 
   dropAudioSource: {fileID: 6526998822992867589}
   dropSuccessClip: {fileID: 8300000, guid: 26ad441bc156b1546a135e17a23c02f0, type: 3}
+  trashau: {fileID: 8300000, guid: 1c2c5e0176ade4a4483073c838734486, type: 3}
   mangkokImage: {fileID: 8329303394509495184}
   emptyColor: {r: 1, g: 1, b: 1, a: 1}
   filledColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
@@ -823,11 +822,11 @@ RectTransform:
   - {fileID: 568275602966092331}
   m_Father: {fileID: 9130654700569565051}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0.5}
-  m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 102.78}
-  m_SizeDelta: {x: 403.79, y: 739.56}
-  m_Pivot: {x: 1, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5524095190716095868
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -849,8 +848,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -1243,6 +1242,7 @@ MonoBehaviour:
   currentRecipe: {fileID: 0}
   state: 0
   masakAudio: {fileID: 7988215459077442297}
+  gosomg: {fileID: 0}
   overcookTime: 5
   progressBar: {fileID: 814001888667060072}
   panVisual: {fileID: 5519811754393253459}
@@ -1959,7 +1959,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -85.86, y: -305.73}
+  m_AnchoredPosition: {x: -93.26001, y: -194.96004}
   m_SizeDelta: {x: 150, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1722885158732965831
@@ -1975,8 +1975,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ingredientData: {fileID: 11400000, guid: 87cc78d856eb39f4e8375d8add8fcc75, type: 2}
-  dragAudioSource: {fileID: 0}
-  dragStartClip: {fileID: 0}
 --- !u!1 &2410347427021199588
 GameObject:
   m_ObjectHideFlags: 0
@@ -3371,6 +3369,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6913956267298398950}
   - component: {fileID: 4460151857246334100}
+  - component: {fileID: 2233582402123005991}
   m_Layer: 5
   m_Name: DraggFood
   m_TagString: Untagged
@@ -3411,8 +3410,106 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentFood: {fileID: 0}
+  trashau: {fileID: 8300000, guid: 1c2c5e0176ade4a4483073c838734486, type: 3}
+  audioSource: {fileID: 2233582402123005991}
   isBurnt: 0
   foodImage: {fileID: 4099706465569421392}
+--- !u!82 &2233582402123005991
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4864691628551497492}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 0.4
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &5002382649048329012
 GameObject:
   m_ObjectHideFlags: 0
@@ -3810,7 +3907,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -78.859985, y: 0}
+  m_AnchoredPosition: {x: -85.900024, y: 106.02}
   m_SizeDelta: {x: 171.80005, y: 130.1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8134576930626499385
@@ -3826,8 +3923,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ingredientData: {fileID: 11400000, guid: 203043147a3accd4d8c57f748fe64a13, type: 2}
-  dragAudioSource: {fileID: 0}
-  dragStartClip: {fileID: 0}
 --- !u!1 &5736271371532899638
 GameObject:
   m_ObjectHideFlags: 0
@@ -4572,6 +4667,7 @@ MonoBehaviour:
   currentRecipe: {fileID: 0}
   state: 0
   masakAudio: {fileID: 7024542520645607328}
+  gosomg: {fileID: 0}
   overcookTime: 5
   progressBar: {fileID: 8335295580589171157}
   panVisual: {fileID: 8170971007650958659}
@@ -4880,7 +4976,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -259.87997, y: -133.01001}
+  m_AnchoredPosition: {x: -263.38, y: -52}
   m_SizeDelta: {x: 197.23999, y: 135.91998}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5643001094390074421
@@ -4896,8 +4992,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ingredientData: {fileID: 11400000, guid: 0cac6d2161cfd8247b7e33b5a57a2f99, type: 2}
-  dragAudioSource: {fileID: 0}
-  dragStartClip: {fileID: 0}
 --- !u!1 &7651151234772507491
 GameObject:
   m_ObjectHideFlags: 0
@@ -5008,7 +5102,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -89.4, y: -159}
+  m_AnchoredPosition: {x: -93.26001, y: -48.22999}
   m_SizeDelta: {x: 164.80005, y: 143.46002}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6082671634923440787
@@ -5024,8 +5118,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ingredientData: {fileID: 11400000, guid: bd3ed73f269550e45a2add6caa9aba7b, type: 2}
-  dragAudioSource: {fileID: 0}
-  dragStartClip: {fileID: 0}
 --- !u!1 &7826483136278764719
 GameObject:
   m_ObjectHideFlags: 0
@@ -5386,7 +5478,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -273.99, y: -294.78}
+  m_AnchoredPosition: {x: -273.99, y: -194.96}
   m_SizeDelta: {x: 176.01001, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &4328894770929803886
@@ -5402,8 +5494,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ingredientData: {fileID: 11400000, guid: ad60cdf3422b4454ca584d9bb122c9c3, type: 2}
-  dragAudioSource: {fileID: 0}
-  dragStartClip: {fileID: 0}
 --- !u!1 &8499237935201831648
 GameObject:
   m_ObjectHideFlags: 0
@@ -5439,7 +5529,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -259.88, y: -4.98}
+  m_AnchoredPosition: {x: -259.88, y: 111}
   m_SizeDelta: {x: 190.23999, y: 120.140015}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6484019989157605830
@@ -5455,8 +5545,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ingredientData: {fileID: 11400000, guid: 369e533161010fa459254719f496a4d8, type: 2}
-  dragAudioSource: {fileID: 0}
-  dragStartClip: {fileID: 0}
 --- !u!1 &8672720321884030796
 GameObject:
   m_ObjectHideFlags: 0
@@ -5859,7 +5947,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -85.86, y: 149}
+  m_AnchoredPosition: {x: -89.400024, y: 269.45}
   m_SizeDelta: {x: 164.80005, y: 143.10999}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &269134126032047079
@@ -5875,8 +5963,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ingredientData: {fileID: 11400000, guid: 478c67449b046924a94998563485a76b, type: 2}
-  dragAudioSource: {fileID: 0}
-  dragStartClip: {fileID: 0}
 --- !u!1 &9150040218657479244
 GameObject:
   m_ObjectHideFlags: 0

@@ -7,6 +7,10 @@ public class Customer : MonoBehaviour
     [HideInInspector] public int slotIndex;
     [HideInInspector] public CustomerSpawner spawner;
 
+    [Header("Audio")]
+    public AudioClip custServed;
+    public AudioClip heartBreak;
+    public AudioSource audioSource;
     [Header("Pesanan")]
     public FoodType orderFood;
 
@@ -96,7 +100,8 @@ public class Customer : MonoBehaviour
             isWaiting = false;
             spawner.ClearSlot(slotIndex);
             GameManager.Instance.OnCustomerServed();
-            Destroy(gameObject);
+            audioSource.PlayOneShot(custServed);
+            Destroy(gameObject,1f);
         }
     }
     public bool TryServe(RecipeData food)
@@ -119,6 +124,7 @@ public class Customer : MonoBehaviour
         isWaiting = false;
         spawner.ClearSlot(slotIndex);
         GameManager.Instance.OnCustomerLeft();
-        Destroy(gameObject);
+        audioSource.PlayOneShot(heartBreak);
+        Destroy(gameObject,1f);
     }
 }

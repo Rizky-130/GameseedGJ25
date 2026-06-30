@@ -5,10 +5,18 @@ public class CustomerSpawner : MonoBehaviour
 {
     [Header("Prefab & Spawn")]
     public GameObject customerPrefab;
+    public AudioClip custCome;
+    public AudioSource audioSource;
     public Transform[] customerSlots;
     [Header("Menu Restoran")]
     public RecipeData[] availableRecipes;
+    [Header("Musik Background")]
+    public AudioSource musicSource; // Drag AudioSource khusus musik ke sini
+    public AudioClip musicPhase1;
+    public AudioClip musicPhase2;
+    public AudioClip musicPhase3;
 
+    private int currentPhase = 0;
     [Header("Phase 1 - Awal (detik 0 - phase1Duration)")]
     public float phase1Duration = 60f;
     public int phase1MaxCustomers = 1;
@@ -44,6 +52,7 @@ public class CustomerSpawner : MonoBehaviour
     void Update()
     {
         gameTime += Time.deltaTime;
+        CheckMusicTransition();
     }
 
     IEnumerator SpawnLoop()
@@ -118,6 +127,7 @@ public class CustomerSpawner : MonoBehaviour
         c.waitTime = GetCurrentWaitTime();
         c.slotIndex = slotIndex;
         c.spawner = this;
+        audioSource.PlayOneShot(custCome);
 
         activeCustomers[slotIndex] = c;
     }
@@ -140,5 +150,37 @@ public class CustomerSpawner : MonoBehaviour
     public void ClearSlot(int slotIndex)
     {
         activeCustomers[slotIndex] = null;
+    }
+
+    void CheckMusicTransition()
+    {
+        int nextPhase = 0;
+        AudioClip nextClip = musicPhase1;
+
+        // Tentukan phase berdasarkan waktu
+        if (gameTime < phase1Duration)
+        {
+            nextPhase = 1;
+            nextClip = musicPhase1;
+        }
+        else if (gameTime < phase2Duration)
+        {
+            nextPhase = 2;
+            nextClip = musicPhase2;
+        }
+        else
+        {
+            nextPhase = 3;
+            nextClip = musicPhase3;
+        }
+
+        // Jika phase berubah, ganti musik
+        if (currentPhase != nextPhase)
+        {
+            currentPhase = nextPhase;
+            musicSource.clip = nextClip;
+            musicSource.loop = true;
+            musicSource.Play();
+        }
     }
 }

@@ -7,6 +7,9 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 {
     [Header("Data")]
     public RecipeData currentFood;
+    [Header("audio")]
+    public AudioClip trashau;
+    public AudioSource audioSource;
     [Header("State")]
     public bool isBurnt = false;
 
@@ -108,6 +111,7 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         Trash trash = target?.GetComponentInParent<Trash>();
         if (trash != null)
         {
+            audioSource.PlayOneShot(trashau);
             if (isBurnt)
             {
                 Debug.Log("Makanan gosong dibuang!");

@@ -11,6 +11,7 @@ public class MangkokRacik : MonoBehaviour, IDropHandler, IBeginDragHandler, IDra
     public List<FoodType> bahanMasuk = new List<FoodType>();
     public AudioSource dropAudioSource; // Drag ke sini audio source-nya
     public AudioClip dropSuccessClip;
+    public AudioClip trashau;
     [Header("UI")]
     public Image mangkokImage;
     public Color emptyColor = Color.white;
@@ -234,6 +235,7 @@ public class MangkokRacik : MonoBehaviour, IDropHandler, IBeginDragHandler, IDra
         Trash trash = target?.GetComponentInParent<Trash>();
         if (trash != null)
         {
+            dropAudioSource.PlayOneShot(trashau);
             Debug.Log("Mangkok dibuang ke trash.");
             ResetMangkok();
             return;
