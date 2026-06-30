@@ -18,3 +18,4 @@ MonoBehaviour:
   cookTime: 10
   foodIcon: {fileID: 21300000, guid: 094f4da8bcc50884ba6b7898a1511278, type: 3}
   mangkokIsiSprite: {fileID: 21300000, guid: 709eb63791f415d49a1040558f9f18c6, type: 3}
+  mangkokBahanMentahSprite: {fileID: 21300000, guid: 709eb63791f415d49a1040558f9f18c6, type: 3}

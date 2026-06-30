@@ -16,6 +16,10 @@ public class GameManager : MonoBehaviour
     public float shakeDuration = 0.3f;
     public float shakeMagnitude = 10f;
 
+    [Header("Heal System")]
+    public int customerPerHeal = 15;
+    private int currentServedSinceLastHeal;
+
     [Header("UI Visual")]
     public List<Image> healthHearts;    // Drag 5 Image hati ke sini di Inspector
     public Sprite fullHeart;            // Sprite hati penuh
@@ -39,6 +43,18 @@ public class GameManager : MonoBehaviour
     {
         score += 100;
         customerServed++;
+
+        currentServedSinceLastHeal++;
+        if(currentServedSinceLastHeal>= customerPerHeal)
+        {
+            if (nyawa < healthHearts.Count)
+            {
+                nyawa++;
+                currentServedSinceLastHeal = 0;
+                Debug.Log("Nyawa Bertambah");
+            }
+        }
+
         UpdateUI();
     }
 

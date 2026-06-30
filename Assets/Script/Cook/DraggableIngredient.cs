@@ -12,6 +12,8 @@ public class DraggableIngredient : MonoBehaviour, IBeginDragHandler, IDragHandle
     // public Color normalColor = Color.white;
     // public Color selectedColor = Color.yellow;
 
+    public AudioSource dragAudioSource; // Drag ke sini audio source-nya
+    public AudioClip dragStartClip;
     private GameObject dragVisual;
     private RectTransform dragVisualRect;
     private Canvas parentCanvas;
@@ -27,6 +29,11 @@ public class DraggableIngredient : MonoBehaviour, IBeginDragHandler, IDragHandle
         dragVisual = new GameObject("DragVisual");
         dragVisual.transform.SetParent(parentCanvas.transform, false);
         dragVisual.transform.SetAsLastSibling();
+
+        if (dragAudioSource != null && dragStartClip != null)
+        {
+            dragAudioSource.PlayOneShot(dragStartClip);
+        }
 
         Image img = dragVisual.AddComponent<Image>();
         if (ingredientData != null && ingredientData.icon != null)

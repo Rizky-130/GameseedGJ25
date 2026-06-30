@@ -110,7 +110,7 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         {
             if (isBurnt)
             {
-                Debug.Log("Makanan gosong dibuang! Nyawa berkurang.");
+                Debug.Log("Makanan gosong dibuang!");
             }
             else
             {

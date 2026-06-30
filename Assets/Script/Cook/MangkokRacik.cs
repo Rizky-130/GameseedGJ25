@@ -9,7 +9,8 @@ public class MangkokRacik : MonoBehaviour, IDropHandler, IBeginDragHandler, IDra
 {
     [Header("Bahan yang Sudah Masuk")]
     public List<FoodType> bahanMasuk = new List<FoodType>();
-
+    public AudioSource dropAudioSource; // Drag ke sini audio source-nya
+    public AudioClip dropSuccessClip;
     [Header("UI")]
     public Image mangkokImage;
     public Color emptyColor = Color.white;
@@ -73,30 +74,10 @@ public class MangkokRacik : MonoBehaviour, IDropHandler, IBeginDragHandler, IDra
 
         if (eventData.pointerDrag != null)
             Debug.Log(eventData.pointerDrag.name);
-        // 1. Cek apakah Mangkok mendeteksi ada benda yang dijatuhkan
-        Debug.Log("Sesuatu dijatuhkan ke Mangkok! Object: " + (eventData.pointerDrag != null ? eventData.pointerDrag.name : "Kosong"));
+        
 
-        // 2. Cek apakah Mangkok sedang terkunci (lagi masak/matang)
-        if (isCooking || isReady)
-        {
-            Debug.Log("❌ Gagal: Mangkok masih memproses masakan (isCooking/isReady = true).");
-            return;
-        }
-
-        // 3. Cek apakah benda yang dijatuhkan punya script DraggableIngredient
         DraggableIngredient ingredient = eventData.pointerDrag?.GetComponent<DraggableIngredient>();
-        if (ingredient == null)
-        {
-            Debug.Log("❌ Gagal: Benda yang dijatuhkan tidak memiliki script 'DraggableIngredient'!");
-            return;
-        }
-
-        // 4. Cek apakah Data Bahan sudah diisi di Inspector
-        if (ingredient.ingredientData == null)
-        {
-            Debug.LogError("❌ ERROR: Script bahan ada, TAPI slot 'Ingredient Data' di Inspector kosong! Isi dulu data bahannya.");
-            return;
-        }
+       
 
         FoodType tipe = ingredient.ingredientData.IngredientType;
 
@@ -109,6 +90,10 @@ public class MangkokRacik : MonoBehaviour, IDropHandler, IBeginDragHandler, IDra
         bahanMasuk.Add(tipe);
         Debug.Log("✅ Bahan berhasil masuk: " + ingredient.ingredientData.IngredientName + " (" + bahanMasuk.Count + " bahan)");
 
+        if (dropAudioSource != null && dropSuccessClip != null)
+        {
+            dropAudioSource.PlayOneShot(dropSuccessClip);
+        }
         UpdateVisual();
         CekTampilTombolRacik();
     }
@@ -140,7 +125,7 @@ public class MangkokRacik : MonoBehaviour, IDropHandler, IBeginDragHandler, IDra
         if (warningText != null)
         {
             warningText.gameObject.SetActive(true);
-            warningText.text = "Bahan tidak cocok!";
+            warningText.text = "Wrong Recipe!";
         }
 
         yield return new WaitForSeconds(warningDuration);
@@ -261,10 +246,27 @@ public class MangkokRacik : MonoBehaviour, IDropHandler, IBeginDragHandler, IDra
     // ========================
     // HELPER
     // ========================
+    // Di dalam class MangkokRacik.cs
+
     void UpdateVisual()
     {
-        if (mangkokImage != null)
+        if (mangkokImage == null) return;
+
+        // 1. Cek resep apa yang sedang dibuat
+        RecipeData resepCocok = RacikManager.Instance.CekResep(bahanMasuk);
+
+        if (resepCocok != null)
+        {
+            // Langsung ambil sprite dari ScriptableObject!
+            mangkokImage.sprite = resepCocok.mangkokBahanMentahSprite;
+            mangkokImage.color = Color.white;
+        }
+        else
+        {
+            // Gunakan tampilan standar jika belum jadi resep
+            mangkokImage.sprite = defaultMangkokSprite;
             mangkokImage.color = bahanMasuk.Count > 0 ? filledColor : emptyColor;
+        }
     }
 
     public void ResetMangkok()

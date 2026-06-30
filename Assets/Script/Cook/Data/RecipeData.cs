@@ -4,10 +4,12 @@ using UnityEngine;
 public class RecipeData : ScriptableObject
 {
     public string recipeName;
-    public FoodType resultFood;          // makanan yang dihasilkan
-    public FoodType[] requiredIngredients; // bahan     yang dibutuhkan
-    public float cookTime = 5f;          // berapa lama memasaknya
+    public FoodType resultFood;
+    public FoodType[] requiredIngredients;
+    public float cookTime = 5f;
     public Sprite foodIcon;
-    [Header("Visual Mangkok Racik")]
-    public Sprite mangkokIsiSprite;
+
+    [Header("Visual Mangkok")]
+    public Sprite mangkokIsiSprite;           // Sprite HASIL JADI (setelah diracik/dimasak)
+    public Sprite mangkokBahanMentahSprite;   // Sprite SAAT BAHAN SUDAH MASUK (sebelum diracik)
 }

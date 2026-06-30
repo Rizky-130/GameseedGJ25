@@ -4,27 +4,27 @@ using UnityEngine.UI;
 public class CookingPan : MonoBehaviour
 {
     [Header("Data Masakan")]
-    public RecipeData currentRecipe;     
+    public RecipeData currentRecipe;
     public CookState state = CookState.Empty;
 
     [Header("Audio")]
     public AudioSource masakAudio;
-    
+
     [Header("Timer")]
     private float cookTimer;
-    public float overcookTime = 5f;      
+    public float overcookTime = 5f;
 
     [Header("UI")]
-    public Image progressBar;            
-    public Image panVisual;              
+    public Image progressBar;
+    public Image panVisual;
 
     [Header("Animasi Panci")]
     public Sprite emptyPanSprite;        // Panci diam (dipakai saat Kosong dan Gosong)
     public Sprite[] cookingSprites;      // Array frame animasi
-    public float frameInterval = 0.2f;   
-    
-    private float animTimer;             
-    private int currentFrame;            
+    public float frameInterval = 0.2f;
+
+    private float animTimer;
+    private int currentFrame;
 
     [Header("Makanan Jadi")]
     public DraggableFood draggableFood;
@@ -42,6 +42,11 @@ public class CookingPan : MonoBehaviour
         // 1. Logika Animasi (Berjalan terus selama Memasak ATAU Matang)
         if (state == CookState.Cooking || state == CookState.Ready)
         {
+            if (state == CookState.Cooking && masakAudio != null && !masakAudio.isPlaying)
+            {
+                masakAudio.Play();
+            }
+
             animTimer += Time.deltaTime;
             if (animTimer >= frameInterval)
             {
@@ -60,26 +65,28 @@ public class CookingPan : MonoBehaviour
             cookTimer -= Time.deltaTime;
             progressBar.fillAmount = 1 - (cookTimer / currentRecipe.cookTime);
 
-            masakAudio.Play();
 
             // Cek Jika Matang
             if (cookTimer <= 0)
             {
                 state = CookState.Ready;
                 progressBar.fillAmount = 1;
-                cookTimer = overcookTime;   
-                UpdateVisual(); 
+                cookTimer = overcookTime;
+                UpdateVisual();
             }
         }
         else if (state == CookState.Ready)
         {
             cookTimer -= Time.deltaTime;
-            
+
             // Cek Jika Gosong
             if (cookTimer <= 0)
-            {   
-                masakAudio.Stop();
+            {
                 state = CookState.Overcooked;
+                if (masakAudio != null && masakAudio.isPlaying)
+                {
+                    masakAudio.Stop();
+                }
                 UpdateVisual(); // Ini akan menghentikan animasi & ganti ke panci kosong
             }
         }
@@ -96,11 +103,11 @@ public class CookingPan : MonoBehaviour
         currentRecipe = recipe;
         cookTimer = recipe.cookTime;
         state = CookState.Cooking;
-        
+
         // Reset frame animasi ke awal saat mulai masak
         currentFrame = 0;
         animTimer = 0f;
-        
+
         UpdateVisual();
         return true;
     }
@@ -125,12 +132,16 @@ public class CookingPan : MonoBehaviour
         state = CookState.Empty;
         currentRecipe = null;
         progressBar.fillAmount = 0;
+        if (masakAudio != null && masakAudio.isPlaying)
+        {
+            masakAudio.Stop();
+        }
         UpdateVisual();
     }
 
     void UpdateVisual()
     {
-        panVisual.color = Color.white; 
+        panVisual.color = Color.white;
 
         switch (state)
         {
