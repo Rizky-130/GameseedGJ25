@@ -251,7 +251,7 @@ MonoBehaviour:
   cookingSpotlight: {fileID: 988081262}
   trashSpotlight: {fileID: 993344558}
   endConfirmPanel: {fileID: 343498373}
-  nextSceneName: SampleScene
+  nextSceneName: For_CookingTest
   sceneTransitionFadeDuration: 1.5
   sceneFadeInDuration: 1.5
 --- !u!1 &257698680

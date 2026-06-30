@@ -18,6 +18,8 @@ public class UIManager : MonoBehaviour
     void Awake()
     {
         Instance = this;
+
+        MusicManager.Instance.StopAndDestroy();
     }
 
     public void UpdateRacikUI(List<FoodType> selected)

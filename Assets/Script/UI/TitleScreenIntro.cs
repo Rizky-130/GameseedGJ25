@@ -159,6 +159,9 @@ public class TitleScreenIntro : MonoBehaviour
         yield return FadeInButtonsStaggered();
 
         yield return SlideSettingsIn();
+
+        if (MusicManager.Instance != null)
+            MusicManager.Instance.PlayMusic();
     }
 
     IEnumerator SlideMCUp()

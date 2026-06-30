@@ -5,7 +5,6 @@ using System.Collections;
 public class PauseMenuManager : MonoBehaviour
 {
     public RectTransform shutter;
-    public RectTransform blackTintRect;
     public CanvasGroup pausePanelGroup;
 
     public RectTransform settingsShutter;
@@ -13,8 +12,6 @@ public class PauseMenuManager : MonoBehaviour
     public float settingsOpenY = 1000f;
     public bool settingsIsOpen = false;
 
-    public GameObject confirmation1;
-    public GameObject confirmation2;
     public string titleScreenScene = "Title_Screen";
 
     public float closedY = 0f;
@@ -26,16 +23,21 @@ public class PauseMenuManager : MonoBehaviour
     public float shakeDuration = 0.15f;
     public float shakeStrength = 5f;
 
+    [Header("Sound")]
+    public AudioSource audioSource;
+    public AudioClip closeShutterSound;
+    public AudioClip openShutterSound;
+
+    [Header("Return To Menu")]
+    public CanvasGroup fadeOverlay;
+    public float fadeDuration = 0.6f;
+
     private bool isPaused = false;
     private bool isAnimating = false;
     private Vector3 camOriginalPos;
-    private float tintOffsetY;
 
     void Start()
     {
-        if (shutter != null && blackTintRect != null)
-            tintOffsetY = blackTintRect.anchoredPosition.y - shutter.anchoredPosition.y;
-
         SetShutterPosition(openY);
 
         if (pausePanelGroup != null)
@@ -48,14 +50,14 @@ public class PauseMenuManager : MonoBehaviour
         if (cameraTransform != null)
             camOriginalPos = cameraTransform.localPosition;
 
-        if (confirmation1 != null)
-            confirmation1.SetActive(false);
-
-        if (confirmation2 != null)
-            confirmation2.SetActive(false);
-
         if (settingsShutter != null)
             SetSettingsShutterPosition(settingsOpenY);
+
+        if (fadeOverlay != null)
+        {
+            fadeOverlay.alpha = 0f;
+            fadeOverlay.gameObject.SetActive(false);
+        }
     }
 
     void Update()
@@ -81,6 +83,18 @@ public class PauseMenuManager : MonoBehaviour
             PauseGame();
     }
 
+    void PlayCloseSound()
+    {
+        if (audioSource != null && closeShutterSound != null)
+            audioSource.PlayOneShot(closeShutterSound);
+    }
+
+    void PlayOpenSound()
+    {
+        if (audioSource != null && openShutterSound != null)
+            audioSource.PlayOneShot(openShutterSound);
+    }
+
     public void PauseGame()
     {
         if (isPaused || isAnimating)
@@ -103,6 +117,8 @@ public class PauseMenuManager : MonoBehaviour
     IEnumerator CloseShutter()
     {
         isAnimating = true;
+
+        PlayCloseSound();
 
         if (pausePanelGroup != null)
         {
@@ -128,6 +144,8 @@ public class PauseMenuManager : MonoBehaviour
     IEnumerator OpenShutter()
     {
         isAnimating = true;
+
+        PlayOpenSound();
 
         if (pausePanelGroup != null)
         {
@@ -170,13 +188,6 @@ public class PauseMenuManager : MonoBehaviour
             pos.y = y;
             shutter.anchoredPosition = pos;
         }
-
-        if (blackTintRect != null)
-        {
-            Vector2 tintPos = blackTintRect.anchoredPosition;
-            tintPos.y = y + tintOffsetY;
-            blackTintRect.anchoredPosition = tintPos;
-        }
     }
 
     void SetSettingsShutterPosition(float y)
@@ -210,38 +221,26 @@ public class PauseMenuManager : MonoBehaviour
 
     public void OnQuitPressed()
     {
-        if (confirmation1 != null)
-            confirmation1.SetActive(true);
+        StartCoroutine(ReturnToMenuTransition());
     }
 
-    public void OnConfirmation1Confirm()
+    IEnumerator ReturnToMenuTransition()
     {
-        if (confirmation1 != null)
-            confirmation1.SetActive(false);
-
-        if (confirmation2 != null)
-            confirmation2.SetActive(true);
-    }
-
-    public void OnConfirmation1Cancel()
-    {
-        if (confirmation1 != null)
-            confirmation1.SetActive(false);
-    }
-
-    public void OnConfirmation2Confirm()
-    {
-        if (confirmation2 != null)
-            confirmation2.SetActive(false);
+        if (fadeOverlay != null)
+        {
+            fadeOverlay.gameObject.SetActive(true);
+            float t = 0f;
+            while (t < fadeDuration)
+            {
+                t += Time.unscaledDeltaTime;
+                fadeOverlay.alpha = Mathf.Clamp01(t / fadeDuration);
+                yield return null;
+            }
+            fadeOverlay.alpha = 1f;
+        }
 
         Time.timeScale = 1f;
         SceneManager.LoadScene(titleScreenScene);
-    }
-
-    public void OnConfirmation2Cancel()
-    {
-        if (confirmation2 != null)
-            confirmation2.SetActive(false);
     }
 
     public void OnSettingsPressed()
@@ -255,6 +254,8 @@ public class PauseMenuManager : MonoBehaviour
 
     IEnumerator CloseSettingsShutter()
     {
+        PlayCloseSound();
+
         yield return AnimateValue(settingsOpenY, settingsClosedY, SetSettingsShutterPosition);
 
         if (cameraTransform != null)
@@ -267,6 +268,13 @@ public class PauseMenuManager : MonoBehaviour
             return;
 
         settingsIsOpen = false;
-        StartCoroutine(AnimateValue(settingsClosedY, settingsOpenY, SetSettingsShutterPosition));
+        StartCoroutine(OpenSettingsShutter());
+    }
+
+    IEnumerator OpenSettingsShutter()
+    {
+        PlayOpenSound();
+
+        yield return AnimateValue(settingsClosedY, settingsOpenY, SetSettingsShutterPosition);
     }
 }

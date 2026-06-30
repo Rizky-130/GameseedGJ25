@@ -16,6 +16,13 @@ public class MenuManager : MonoBehaviour
     public Vector2 creditCenter;
     public Vector2 creditHiddenLeft;
 
+    [Header("Play Transition")]
+    public AudioSource audioSource;
+    public AudioClip playSound;
+    public CanvasGroup fadeOverlay;
+    public float fadeDuration = 0.8f;
+    public float soundDelayBeforeFade = 0f;
+
     [System.Serializable]
     public class ParallaxLayer
     {
@@ -45,16 +52,85 @@ public class MenuManager : MonoBehaviour
     void Start()
     {
         creditPanel.anchoredPosition = creditHiddenRight;
-
         settingsPanel.anchoredPosition = creditHiddenLeft;
 
         foreach (var p in parallaxLayers)
             p.CacheRestingPosition();
+
+        if (fadeOverlay != null)
+        {
+            fadeOverlay.alpha = 1f;
+            fadeOverlay.gameObject.SetActive(true);
+            StartCoroutine(FadeIn());
+        }
+    }
+
+    IEnumerator FadeIn()
+    {
+        float t = 0f;
+        while (t < fadeDuration)
+        {
+            fadeOverlay.alpha = Mathf.SmoothStep(1f, 0f, t / fadeDuration);
+            t += Time.deltaTime;
+            yield return null;
+        }
+        fadeOverlay.alpha = 0f;
+        fadeOverlay.gameObject.SetActive(false);
     }
 
     public void PlayGame()
     {
-        SceneManager.LoadScene(gameSceneName);
+        if (transitioning) return;
+        StopAllCoroutines();
+        StartCoroutine(PlayGameTransition());
+    }
+
+    IEnumerator PlayGameTransition()
+    {
+        transitioning = true;
+
+        // Play the sound first
+        if (audioSource != null && playSound != null)
+            audioSource.PlayOneShot(playSound);
+
+        // Wait for the clip to finish + any optional extra delay
+        float waitTime = (playSound != null ? playSound.length : 0f) + soundDelayBeforeFade;
+        yield return new WaitForSeconds(waitTime);
+
+        // Fade screen to black
+        if (fadeOverlay != null)
+        {
+            fadeOverlay.gameObject.SetActive(true);
+            float t = 0f;
+            while (t < fadeDuration)
+            {
+                fadeOverlay.alpha = Mathf.SmoothStep(0f, 1f, t / fadeDuration);
+                t += Time.deltaTime;
+                yield return null;
+            }
+            fadeOverlay.alpha = 1f;
+        }
+
+        DontDestroyOnLoad(fadeOverlay.gameObject);
+        DontDestroyOnLoad(gameObject);
+
+        AsyncOperation load = SceneManager.LoadSceneAsync(gameSceneName);
+        yield return load;
+
+        if (fadeOverlay != null)
+        {
+            float t = 0f;
+            while (t < fadeDuration)
+            {
+                fadeOverlay.alpha = Mathf.SmoothStep(1f, 0f, t / fadeDuration);
+                t += Time.deltaTime;
+                yield return null;
+            }
+            fadeOverlay.alpha = 0f;
+            fadeOverlay.gameObject.SetActive(false);
+        }
+
+        Destroy(gameObject);
     }
 
     public void QuitGame()
@@ -97,9 +173,7 @@ public class MenuManager : MonoBehaviour
         while (time < duration)
         {
             float t = Mathf.SmoothStep(0, 1, time / duration);
-
             panel.anchoredPosition = Vector2.Lerp(from, to, t);
-
             time += Time.deltaTime;
             yield return null;
         }
