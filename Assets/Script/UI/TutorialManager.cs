@@ -94,12 +94,14 @@ public class TutorialManager : MonoBehaviour
     public void OnSkipPressed()
     {
         SetHowToPlayInteractable(false);
+        SetActiveSafe(howToPlayPanel, false);
         SetActiveSafe(skipConfirmPanel, true);
     }
 
     public void OnSkipCancel()
     {
         SetActiveSafe(skipConfirmPanel, false);
+        SetActiveSafe(howToPlayPanel, true);
         SetHowToPlayInteractable(true);
     }
 

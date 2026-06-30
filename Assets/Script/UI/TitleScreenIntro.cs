@@ -44,11 +44,11 @@ public class TitleScreenIntro : MonoBehaviour
     public float ghostStaggerDelay = 0.25f;
     public AnimationCurve ghostPopCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
-    public Vector2 ghost1StartOffset = new Vector2(40f, -150f);
-    public Vector2 ghost1ControlOffset = new Vector2(-80f, -80f);
+    public Vector2 ghost1StartOffset = new Vector2(40f, -300f);
+    public Vector2 ghost1ControlOffset = new Vector2(-80f, -150f);
 
-    public Vector2 ghost2StartOffset = new Vector2(-40f, -150f);
-    public Vector2 ghost2ControlOffset = new Vector2(80f, -80f);
+    public Vector2 ghost2StartOffset = new Vector2(-40f, -300f);
+    public Vector2 ghost2ControlOffset = new Vector2(80f, -150f);
 
     [Header("Ghost Idle Sway")]
     public float swayAmount = 15f;
@@ -60,6 +60,9 @@ public class TitleScreenIntro : MonoBehaviour
 
     void Start()
     {
+        if (MusicManager.Instance != null)
+            MusicManager.Instance.PlayMusic();
+
         if (logoText != null)
         {
             Color c = logoText.color;
@@ -159,9 +162,6 @@ public class TitleScreenIntro : MonoBehaviour
         yield return FadeInButtonsStaggered();
 
         yield return SlideSettingsIn();
-
-        if (MusicManager.Instance != null)
-            MusicManager.Instance.PlayMusic();
     }
 
     IEnumerator SlideMCUp()

@@ -83,8 +83,8 @@ Material:
     - _StencilWriteMask: 255
     - _UVSec: 0
     - _UseUIAlphaClip: 0
-    - _WaveAmplitude: 20.2
-    - _WaveFrequency: 20
+    - _WaveAmplitude: 7.5
+    - _WaveFrequency: 2.7
     - _WaveSpeed: 8.22
     - _ZWrite: 1
     m_Colors:
