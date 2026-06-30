@@ -42,11 +42,13 @@ public class CustomerSpawner : MonoBehaviour
     public float gameTime = 0f;
 
     private Customer[] activeCustomers;
+    private Coroutine spawnCoroutine;
+    private bool isWaitingToSpawn = false;
 
     void Start()
     {
         activeCustomers = new Customer[customerSlots.Length];
-        StartCoroutine(SpawnLoop());
+        TriggerSpawnAfterDelay();
     }
 
     void Update()
@@ -65,10 +67,47 @@ public class CustomerSpawner : MonoBehaviour
             int currentMax = GetCurrentMaxCustomers();
 
             if (emptySlot >= 0 && CountActiveCustomers() < currentMax)
+            {
                 SpawnCustomer(emptySlot);
-
-            yield return new WaitForSeconds(GetCurrentSpawnInterval());
+                yield return new WaitForSeconds(GetCurrentSpawnInterval());
+            }
+            else
+            {
+                // Jika slot penuh atau max customer tercapai, tunggu sebentar sebelum cek lagi
+                yield return new WaitForSeconds(1f);
+            }
         }
+    }
+    public void TriggerSpawnAfterDelay()
+    {
+        if (!isWaitingToSpawn)
+        {
+            StartCoroutine(WaitAndSpawn());
+        }
+    }
+    IEnumerator WaitAndSpawn()
+    {
+        isWaitingToSpawn = true;
+
+        // Tunggu sesuai interval (phase 1, 2, atau 3)
+        yield return new WaitForSeconds(GetCurrentSpawnInterval());
+
+        int emptySlot = GetEmptySlot();
+        int currentMax = GetCurrentMaxCustomers();
+
+        if (emptySlot >= 0 && CountActiveCustomers() < currentMax)
+        {
+            SpawnCustomer(emptySlot);
+        }
+
+        isWaitingToSpawn = false;
+    }
+    public void ClearSlot(int slotIndex)
+    {
+        activeCustomers[slotIndex] = null;
+
+        // Pemicu baru: Begitu kosong, mulai hitung spawnInterval
+        TriggerSpawnAfterDelay();
     }
 
     int GetCurrentMaxCustomers()
@@ -147,10 +186,10 @@ public class CustomerSpawner : MonoBehaviour
         return count;
     }
 
-    public void ClearSlot(int slotIndex)
-    {
-        activeCustomers[slotIndex] = null;
-    }
+    // public void ClearSlot(int slotIndex)
+    // {
+    //     activeCustomers[slotIndex] = null;
+    // }
 
     void CheckMusicTransition()
     {
