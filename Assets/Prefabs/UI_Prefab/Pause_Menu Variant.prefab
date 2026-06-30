@@ -1283,7 +1283,7 @@ MonoBehaviour:
   shakeStrength: 5
   audioSource: {fileID: 1636554091850997527}
   closeShutterSound: {fileID: 8300000, guid: 512a1e4fe058bac46b72e94d9cea4fe7, type: 3}
-  openShutterSound: {fileID: 8300000, guid: f421b96f999e8f544a7548670a1dcddb, type: 3}
+  openShutterSound: {fileID: 8300000, guid: 512a1e4fe058bac46b72e94d9cea4fe7, type: 3}
   fadeOverlay: {fileID: 9100536472614494509}
   fadeDuration: 1.5
 --- !u!1 &6001997314260054313 stripped

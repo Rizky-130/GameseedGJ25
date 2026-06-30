@@ -19,7 +19,8 @@ public class UIManager : MonoBehaviour
     {
         Instance = this;
 
-        MusicManager.Instance.StopAndDestroy();
+        if (MusicManager.Instance != null)
+            MusicManager.Instance.StopAndDestroy();
     }
 
     public void UpdateRacikUI(List<FoodType> selected)

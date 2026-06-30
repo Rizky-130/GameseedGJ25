@@ -460,14 +460,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1158004215}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b0e2d7a8d09490a459df86f215e49af4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   panel: {fileID: 1242143537643820072}
-  overlayImage: {fileID: 8676176486564331369}
-  overlayTargetAlpha: 0.6
   openButton: {fileID: 2093659256}
   exitButton: {fileID: 8266547427397092203}
   foodImages:
@@ -503,6 +501,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  audioSource: {fileID: 0}
+  toggleSound: {fileID: 0}
 --- !u!114 &1158004221
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -516,14 +516,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shutter: {fileID: 0}
-  blackTintRect: {fileID: 0}
   pausePanelGroup: {fileID: 0}
   settingsShutter: {fileID: 0}
   settingsClosedY: 9
   settingsOpenY: 1500
   settingsIsOpen: 0
-  confirmation1: {fileID: 0}
-  confirmation2: {fileID: 0}
   titleScreenScene: Title_Screen
   closedY: 50
   openY: 1500
@@ -555,6 +552,11 @@ MonoBehaviour:
   cameraTransform: {fileID: 1079502787}
   shakeDuration: 0.15
   shakeStrength: 5
+  audioSource: {fileID: 0}
+  closeShutterSound: {fileID: 0}
+  openShutterSound: {fileID: 0}
+  fadeOverlay: {fileID: 0}
+  fadeDuration: 0.6
 --- !u!1 &1425289796
 GameObject:
   m_ObjectHideFlags: 0
@@ -770,14 +772,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shutter: {fileID: 0}
-  blackTintRect: {fileID: 0}
   pausePanelGroup: {fileID: 0}
   settingsShutter: {fileID: 0}
   settingsClosedY: 0
   settingsOpenY: 1000
   settingsIsOpen: 0
-  confirmation1: {fileID: 0}
-  confirmation2: {fileID: 0}
   titleScreenScene: Title_Screen
   closedY: 0
   openY: 1000
@@ -809,6 +808,11 @@ MonoBehaviour:
   cameraTransform: {fileID: 0}
   shakeDuration: 0.15
   shakeStrength: 5
+  audioSource: {fileID: 0}
+  closeShutterSound: {fileID: 0}
+  openShutterSound: {fileID: 0}
+  fadeOverlay: {fileID: 0}
+  fadeDuration: 0.6
 --- !u!114 &393195404694617297 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6205449026555793262, guid: ce743c70e9c2d2b47ae560ad827a6f1d, type: 3}
@@ -980,17 +984,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &8676176486564331369 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 475268563460258254, guid: ce743c70e9c2d2b47ae560ad827a6f1d, type: 3}
-  m_PrefabInstance: {fileID: 5728423298348630907}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &8894455782327645933 stripped

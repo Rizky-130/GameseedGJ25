@@ -7,9 +7,6 @@ using UnityEngine.EventSystems;
 public class CookBookPanel : MonoBehaviour
 {
     public RectTransform panel;
-    public Image overlayImage;
-    [Range(0f, 1f)]
-    public float overlayTargetAlpha = 0.6f;
     public Button openButton;
     public Button exitButton;
     public GameObject[] foodImages;
@@ -17,6 +14,10 @@ public class CookBookPanel : MonoBehaviour
 
     public float animDuration = 0.4f;
     public AnimationCurve slideCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+
+    [Header("Sound")]
+    public AudioSource audioSource;
+    public AudioClip toggleSound;
 
     private float _panelOnscreenX;
     private float _panelOffscreenX;
@@ -29,9 +30,9 @@ public class CookBookPanel : MonoBehaviour
         _panelOffscreenX = _panelOnscreenX + panel.rect.width;
 
         SetPanelX(_panelOffscreenX);
-        SetOverlayAlpha(0f);
-        overlayImage.gameObject.SetActive(false);
         panel.gameObject.SetActive(false);
+
+        _isOpen = false;
 
         if (openButton) openButton.onClick.AddListener(Open);
         if (exitButton) exitButton.onClick.AddListener(Close);
@@ -57,12 +58,20 @@ public class CookBookPanel : MonoBehaviour
         else Open();
     }
 
+    void PlayToggleSound()
+    {
+        if (audioSource != null && toggleSound != null)
+            audioSource.PlayOneShot(toggleSound);
+    }
+
     public void Open()
     {
+        if (_isOpen) return;
         _isOpen = true;
 
+        PlayToggleSound();
+
         panel.gameObject.SetActive(true);
-        overlayImage.gameObject.SetActive(true);
 
         ClearSelection();
 
@@ -72,7 +81,10 @@ public class CookBookPanel : MonoBehaviour
 
     public void Close()
     {
+        if (!_isOpen) return;
         _isOpen = false;
+
+        PlayToggleSound();
 
         ClearSelection();
 
@@ -88,11 +100,9 @@ public class CookBookPanel : MonoBehaviour
 
     private IEnumerator Animate(bool open)
     {
-        float startX     = panel.anchoredPosition.x;
-        float endX       = open ? _panelOnscreenX : _panelOffscreenX;
-        float startAlpha = overlayImage.color.a;
-        float endAlpha   = open ? overlayTargetAlpha : 0f;
-        float elapsed    = 0f;
+        float startX  = panel.anchoredPosition.x;
+        float endX    = open ? _panelOnscreenX : _panelOffscreenX;
+        float elapsed = 0f;
 
         while (elapsed < animDuration)
         {
@@ -101,17 +111,14 @@ public class CookBookPanel : MonoBehaviour
             float curved = slideCurve.Evaluate(t);
 
             SetPanelX(Mathf.Lerp(startX, endX, curved));
-            SetOverlayAlpha(Mathf.Lerp(startAlpha, endAlpha, curved));
             yield return null;
         }
 
         SetPanelX(endX);
-        SetOverlayAlpha(endAlpha);
 
         if (!open)
         {
             panel.gameObject.SetActive(false);
-            overlayImage.gameObject.SetActive(false);
         }
     }
 
@@ -126,12 +133,5 @@ public class CookBookPanel : MonoBehaviour
         Vector2 pos = panel.anchoredPosition;
         pos.x = x;
         panel.anchoredPosition = pos;
-    }
-
-    private void SetOverlayAlpha(float alpha)
-    {
-        Color c = overlayImage.color;
-        c.a = alpha;
-        overlayImage.color = c;
     }
 }
