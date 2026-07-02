@@ -37,6 +37,12 @@ public class GameOverManager : MonoBehaviour
     private float elapsedTime = 0f;
     private Vector3 camOriginalPos;
 
+    // Store stats before scene reload
+    private static int savedScore = 0;
+    private static float savedTime = 0f;
+    private static int savedCustomerServed = 0;
+    private static bool pendingGameOver = false;
+
     void Awake()
     {
         Instance = this;
@@ -50,6 +56,15 @@ public class GameOverManager : MonoBehaviour
 
         if (cameraTransform != null)
             camOriginalPos = cameraTransform.localPosition;
+
+        // If we reloaded for game over, show it immediately
+        if (pendingGameOver)
+        {
+            pendingGameOver = false;
+            gameOverShown = true;
+            Time.timeScale = 0f;
+            StartCoroutine(GameOverSequenceAfterReload());
+        }
     }
 
     void Update()
@@ -70,10 +85,19 @@ public class GameOverManager : MonoBehaviour
 
         gameOverShown = true;
 
-        StartCoroutine(GameOverSequence());
+        // Save stats before reload
+        if (GameManager.Instance != null)
+        {
+            savedScore = GameManager.Instance.score;
+            savedCustomerServed = GameManager.Instance.customerServed;
+        }
+        savedTime = elapsedTime;
+        pendingGameOver = true;
+
+        StartCoroutine(HitThenReload());
     }
 
-    IEnumerator GameOverSequence()
+    IEnumerator HitThenReload()
     {
         if (audioSource != null && hitSound != null)
             audioSource.PlayOneShot(hitSound);
@@ -83,8 +107,12 @@ public class GameOverManager : MonoBehaviour
 
         yield return new WaitForSecondsRealtime(delayBeforeReveal);
 
-        Time.timeScale = 0f;
+        // Reload the scene — Start() will detect pendingGameOver and show the canvas
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
 
+    IEnumerator GameOverSequenceAfterReload()
+    {
         if (audioSource != null && gameOverRevealSound != null)
             audioSource.PlayOneShot(gameOverRevealSound);
 
@@ -119,14 +147,9 @@ public class GameOverManager : MonoBehaviour
 
     IEnumerator RevealStats()
     {
-        int finalScore = 0;
-        int finalServed = 0;
-
-        if (GameManager.Instance != null)
-        {
-            finalScore = GameManager.Instance.score;
-            finalServed = GameManager.Instance.customerServed;
-        }
+        int finalScore = savedScore;
+        int finalServed = savedCustomerServed;
+        float finalTime = savedTime;
 
         int savedHighScore = PlayerPrefs.GetInt(HighScoreKey, 0);
         int newHighScore = Mathf.Max(savedHighScore, finalScore);
@@ -145,7 +168,7 @@ public class GameOverManager : MonoBehaviour
 
         if (timeText != null)
         {
-            yield return CountUpTime(timeText, elapsedTime);
+            yield return CountUpTime(timeText, finalTime);
             yield return new WaitForSecondsRealtime(statStaggerDelay);
         }
 
