@@ -69,7 +69,6 @@ public class DistractionManager : MonoBehaviour {
 	}
 
 	IEnumerator StartSpawningDistractions() {
-		// TEMP
 		yield return new WaitForSeconds(45);
 		StartCoroutine(WaitForBoss());
 		StartCoroutine(SpawnDistraction());
@@ -79,6 +78,7 @@ public class DistractionManager : MonoBehaviour {
 		if (can_tween) {
 			if (!is_tween_reversed) {
 				distraction_paper.transform.position = Vector2.Lerp(distraction_paper.transform.position, new Vector2(0, end_y), 5f * Time.deltaTime);
+				time_remaining = time_until_game_over;
 				if (distraction_paper.transform.position.y < paper_start_y / 2 && can_play_on_enter) {
 					audio_source.Play();
 					can_play_on_enter = false;
@@ -87,7 +87,6 @@ public class DistractionManager : MonoBehaviour {
 					distraction_paper.transform.position = new Vector2(0, end_y);
 					stamp.can_drag = true;
 					can_tween = false;
-					time_remaining = time_until_game_over;
 					is_paper_shown = true;
 					can_play_on_enter = true;
 				}
@@ -109,10 +108,9 @@ public class DistractionManager : MonoBehaviour {
 		if (is_paper_shown) {
 			time_remaining -= Time.deltaTime;
 			if (time_remaining < 0) {
-				// Debug.Log("ADD GAMEOVER HERE");
-				// TEMP
-				if (GameOverManager.Instance != null)
-            	GameOverManager.Instance.ShowGameOver();
+				if (GameOverManager.Instance != null) {
+					GameOverManager.Instance.ShowGameOver();
+				}
 			}
 		}
 
@@ -147,10 +145,10 @@ public class DistractionManager : MonoBehaviour {
 
 	public IEnumerator HidePaper() {
 		is_paper_shown = false;
+		time_remaining = time_until_game_over;
 		yield return new WaitForSeconds(1f);
 		can_tween = true;
 		is_tween_reversed = true;
-		time_remaining = time_until_game_over;
 		StartCoroutine(WaitForBoss());
 	}
 
