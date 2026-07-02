@@ -70,11 +70,11 @@ MonoBehaviour:
   - Can't you cook any faster?
   - Be quick! Or I'll just eat you instead.
   p1_bubble_min_time: 10
-  p1_bubble_max_time: 18
-  p2_bubble_min_time: 9
-  p2_bubble_max_time: 17
-  p3_bubble_min_time: 7
-  p3_bubble_max_time: 16
+  p1_bubble_max_time: 17
+  p2_bubble_min_time: 7
+  p2_bubble_max_time: 15
+  p3_bubble_min_time: 5
+  p3_bubble_max_time: 14
   max_bubbles: 6
   bubbles: []
   bubble_count: 0
