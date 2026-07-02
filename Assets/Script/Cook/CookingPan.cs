@@ -18,6 +18,7 @@ public class CookingPan : MonoBehaviour
 
     [Header("UI")]
     public Image progressBar;
+    public GameObject progressBar2;
     public Image panVisual;
 
     [Header("Animasi Panci")]
@@ -149,20 +150,23 @@ public class CookingPan : MonoBehaviour
     {
         panVisual.color = Color.white;
 
+        // Tampilkan hanya jika statusnya Cooking atau Ready
+        bool isCookingOrReady = (state == CookState.Cooking || state == CookState.Ready);
+        if (progressBar != null)
+        {
+            progressBar2.gameObject.SetActive(isCookingOrReady);
+        }
+
         switch (state)
         {
             case CookState.Empty:
                 panVisual.sprite = emptyPanSprite;
                 break;
-            case CookState.Cooking:
-                // Animasi di-handle oleh Update()
-                break;
-            case CookState.Ready:
-                // Animasi masih terus dilanjutkan oleh Update()
-                break;
             case CookState.Overcooked:
-                panVisual.sprite = emptyPanSprite; // Kembali ke panci diam
+                panVisual.sprite = emptyPanSprite;
                 break;
+                // Case Cooking dan Ready tidak perlu melakukan apa-apa di sini 
+                // karena animasi ditangani oleh Update()
         }
     }
 

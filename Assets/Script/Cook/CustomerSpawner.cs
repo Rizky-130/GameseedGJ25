@@ -11,7 +11,7 @@ public class CustomerSpawner : MonoBehaviour
     [Header("Menu Restoran")]
     public RecipeData[] availableRecipes;
     [Header("Musik Background")]
-    public AudioSource musicSource; // Drag AudioSource khusus musik ke sini
+    public AudioSource musicSource;
     public AudioClip musicPhase1;
     public AudioClip musicPhase2;
     public AudioClip musicPhase3;
@@ -31,83 +31,60 @@ public class CustomerSpawner : MonoBehaviour
 
     [Header("Phase 3 - Susah (setelah phase2Duration)")]
     public int phase3MaxCustomers = 3;
-    public float phase3SpawnIntervalMin = 4f;   // batas paling cepat
-    public float phase3SpawnIntervalStart = 6f; // interval awal phase 3
-    public float phase3SpawnScaling = 0.01f;    // seberapa cepat makin susah
-    public float phase3WaitTimeMin = 12f;       // batas paling pendek
-    public float phase3WaitTimeStart = 25f;     // wait time awal phase 3
-    public float phase3WaitScaling = 0.05f;     // seberapa cepat timer memendek
+    public float phase3SpawnIntervalMin = 4f;
+    public float phase3SpawnIntervalStart = 6f;
+    public float phase3SpawnScaling = 0.01f;
+    public float phase3WaitTimeMin = 12f;
+    public float phase3WaitTimeStart = 25f;
+    public float phase3WaitScaling = 0.05f;
 
     [Header("Debug (jangan diubah)")]
     public float gameTime = 0f;
+    public float spawnTime = 0f; // hanya jalan kalau ada slot kosong yang bisa diisi
 
     private Customer[] activeCustomers;
-    private Coroutine spawnCoroutine;
-    private bool isWaitingToSpawn = false;
 
     void Start()
     {
         activeCustomers = new Customer[customerSlots.Length];
-        TriggerSpawnAfterDelay();
     }
 
     void Update()
     {
         gameTime += Time.deltaTime;
         CheckMusicTransition();
+        UpdateSpawnTimer();
     }
 
-    IEnumerator SpawnLoop()
+    // spawnTime cuma bertambah kalau ada slot kosong & belum capai max.
+    // Begitu penuh/max, spawnTime dipaksa 0 dan berhenti hitung sampai ada slot kosong lagi.
+    void UpdateSpawnTimer()
     {
-        yield return new WaitForSeconds(3f);
-
-        while (true)
-        {
-            int emptySlot = GetEmptySlot();
-            int currentMax = GetCurrentMaxCustomers();
-
-            if (emptySlot >= 0 && CountActiveCustomers() < currentMax)
-            {
-                SpawnCustomer(emptySlot);
-                yield return new WaitForSeconds(GetCurrentSpawnInterval());
-            }
-            else
-            {
-                // Jika slot penuh atau max customer tercapai, tunggu sebentar sebelum cek lagi
-                yield return new WaitForSeconds(1f);
-            }
-        }
-    }
-    public void TriggerSpawnAfterDelay()
-    {
-        if (!isWaitingToSpawn)
-        {
-            StartCoroutine(WaitAndSpawn());
-        }
-    }
-    IEnumerator WaitAndSpawn()
-    {
-        isWaitingToSpawn = true;
-
-        // Tunggu sesuai interval (phase 1, 2, atau 3)
-        yield return new WaitForSeconds(GetCurrentSpawnInterval());
-
         int emptySlot = GetEmptySlot();
         int currentMax = GetCurrentMaxCustomers();
+        bool bisaSpawn = emptySlot >= 0 && CountActiveCustomers() < currentMax;
 
-        if (emptySlot >= 0 && CountActiveCustomers() < currentMax)
+        if (!bisaSpawn)
         {
-            SpawnCustomer(emptySlot);
+            spawnTime = 0f; // gak ada slot yang bisa diisi, timer diam di 0
+            return;
         }
 
-        isWaitingToSpawn = false;
+        spawnTime += Time.deltaTime;
+
+        if (spawnTime >= GetCurrentSpawnInterval())
+        {
+            SpawnCustomer(emptySlot); // spawn 1 pelanggan di slot kosong yang ditemukan
+            spawnTime = 0f;           // reset, siklus ulang dari 0
+        }
     }
+
     public void ClearSlot(int slotIndex)
     {
         activeCustomers[slotIndex] = null;
-
-        // Pemicu baru: Begitu kosong, mulai hitung spawnInterval
-        TriggerSpawnAfterDelay();
+        // tidak perlu apa-apa lagi di sini,
+        // UpdateSpawnTimer() otomatis mendeteksi slot kosong ini di frame berikutnya
+        // dan mulai menghitung spawnTime dari 0
     }
 
     int GetCurrentMaxCustomers()
@@ -150,19 +127,19 @@ public class CustomerSpawner : MonoBehaviour
         if (availableRecipes != null && availableRecipes.Length > 0)
         {
             RecipeData pesanan = availableRecipes[Random.Range(0, availableRecipes.Length)];
-
-            c.orderFood = pesanan.resultFood;          // Set data makanannya
+            c.orderFood = pesanan.resultFood;
 
             if (c.orderIconImage != null)
             {
-                c.orderIconImage.sprite = pesanan.foodIcon; // Set gambar iconnya
-                c.orderIconImage.color = Color.white;       // Pastikan warnanya tidak gelap
+                c.orderIconImage.sprite = pesanan.foodIcon;
+                c.orderIconImage.color = Color.white;
             }
         }
         else
         {
             Debug.LogWarning("Daftar resep di Spawner masih kosong!");
         }
+
         c.waitTime = GetCurrentWaitTime();
         c.slotIndex = slotIndex;
         c.spawner = this;
@@ -186,17 +163,11 @@ public class CustomerSpawner : MonoBehaviour
         return count;
     }
 
-    // public void ClearSlot(int slotIndex)
-    // {
-    //     activeCustomers[slotIndex] = null;
-    // }
-
     void CheckMusicTransition()
     {
         int nextPhase = 0;
         AudioClip nextClip = musicPhase1;
 
-        // Tentukan phase berdasarkan waktu
         if (gameTime < phase1Duration)
         {
             nextPhase = 1;
@@ -213,7 +184,6 @@ public class CustomerSpawner : MonoBehaviour
             nextClip = musicPhase3;
         }
 
-        // Jika phase berubah, ganti musik
         if (currentPhase != nextPhase)
         {
             currentPhase = nextPhase;
