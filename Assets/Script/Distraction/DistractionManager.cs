@@ -70,7 +70,7 @@ public class DistractionManager : MonoBehaviour {
 
 	IEnumerator StartSpawningDistractions() {
 		// TEMP
-		yield return new WaitForSeconds(1);
+		yield return new WaitForSeconds(45);
 		StartCoroutine(WaitForBoss());
 		StartCoroutine(SpawnDistraction());
 	}
@@ -109,9 +109,10 @@ public class DistractionManager : MonoBehaviour {
 		if (is_paper_shown) {
 			time_remaining -= Time.deltaTime;
 			if (time_remaining < 0) {
-				Debug.Log("ADD GAMEOVER HERE");
+				// Debug.Log("ADD GAMEOVER HERE");
 				// TEMP
-				// GameOverManager.Instance.ShowGameOver();
+				if (GameOverManager.Instance != null)
+            	GameOverManager.Instance.ShowGameOver();
 			}
 		}
 
