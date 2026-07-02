@@ -3,7 +3,13 @@ guid: 11f53a1ec3ea5304891646c488ec3d0b
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - speech_text: {instanceID: 0}
+  - close_button: {instanceID: 0}
+  - distracting_sound: {instanceID: 0}
+  - bubble_1_sprite: {instanceID: 0}
+  - bubble_2_sprite: {instanceID: 0}
+  - bubble_3_sprite: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

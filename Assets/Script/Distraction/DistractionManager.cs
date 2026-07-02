@@ -10,6 +10,9 @@ public class DistractionManager : MonoBehaviour {
 	[SerializeField] private GameObject distraction_paper;
 	[SerializeField] private GameObject boss;
 
+	[SerializeField] private GameObject pause_variant;
+	private PauseMenuManager pause_manager;
+
 	[SerializeField] private int p1_customers_upper_bound = 15;
 	[SerializeField] private int p2_customers_upper_bound = 30;
 
@@ -27,8 +30,6 @@ public class DistractionManager : MonoBehaviour {
 
 	[Header("Bubble")]
 	[SerializeField] private string[] speeches;
-	[SerializeField] private float bubble_min_x_distance = 2f;
-	[SerializeField] private float bubble_min_y_distance = 1.5f;
 	[SerializeField] private float p1_bubble_min_time = 10;//s
 	[SerializeField] private float p1_bubble_max_time = 20;//s
 	[SerializeField] private float p2_bubble_min_time = 8;//s
@@ -36,6 +37,7 @@ public class DistractionManager : MonoBehaviour {
 	[SerializeField] private float p3_bubble_min_time = 7;//s
 	[SerializeField] private float p3_bubble_max_time = 18;//s
 	[SerializeField] private int max_bubbles = 6;
+	public List<GameObject> bubbles = new List<GameObject>();
 	public int bubble_count = 0;
 
 	private AudioSource audio_source;
@@ -64,6 +66,7 @@ public class DistractionManager : MonoBehaviour {
 		timer_bg = timer_fill.transform.GetChild(0).gameObject;
 		stamped = distraction_paper.transform.GetChild(2).gameObject;
 		distraction_paper.transform.position = new Vector2(0, paper_start_y);
+		pause_manager = pause_variant.GetComponent<PauseMenuManager>();
 
 		StartCoroutine(StartSpawningDistractions());
 	}
@@ -75,6 +78,21 @@ public class DistractionManager : MonoBehaviour {
 	}
 
 	void Update() {
+		if (pause_manager.isPaused) {
+			boss.SetActive(false);
+			distraction_paper.SetActive(false);
+		} else {
+			boss.SetActive(true);
+			distraction_paper.SetActive(true);
+			foreach (GameObject bubble in bubbles) {
+				bubble.SetActive(true);
+				if (bubble.GetComponent<DistractionBubble>().resume_coroutine) {
+					bubble.GetComponent<DistractionBubble>().resume_coroutine = false;
+					bubble.GetComponent<DistractionBubble>().StartCoroutine(bubble.GetComponent<DistractionBubble>().TextVisible());
+				}
+			}
+		}
+
 		if (can_tween) {
 			if (!is_tween_reversed) {
 				distraction_paper.transform.position = Vector2.Lerp(distraction_paper.transform.position, new Vector2(0, end_y), 5f * Time.deltaTime);
@@ -112,13 +130,18 @@ public class DistractionManager : MonoBehaviour {
 					GameOverManager.Instance.ShowGameOver();
 				}
 			}
+		} else {
+			time_remaining = time_until_game_over;
 		}
 
 		timer_fill.GetComponent<Image>().fillAmount = 1 - (time_remaining / time_until_game_over);
 	}
 
 	public void SpawnBubble(string text, Vector2 position) {
+		// check if there are customer in that spot and spawn there
 		GameObject bubble = Instantiate(bubble_prefabs[Random.Range(0, bubble_prefabs.Length)], position, Quaternion.identity);
+		bubbles.Add(bubble);
+		bubble.GetComponent<DistractionBubble>().pause_manager = pause_manager;
 		bubble.GetComponent<DistractionBubble>().text_to_display = text;
 		int index = Random.Range(1, 7);
 		bubble.GetComponent<SpriteRenderer>().sortingOrder = index;
@@ -177,32 +200,16 @@ public class DistractionManager : MonoBehaviour {
 		yield return new WaitForSeconds(delay);
 
 		if (bubble_count < max_bubbles) {
-			Vector2 bubble_pos;
-			bool is_valid_pos;
-			int attempts = 0;
-			do {
-				is_valid_pos = true;
-				bubble_pos = new Vector2(Random.Range(-7f, 7f), Random.Range(-3f, 3f));
-				GameObject[] spawned_bubbles = GameObject.FindGameObjectsWithTag("DistractionBubble");
-				for (int i = 0; i < spawned_bubbles.Length; i++) {
-					if (Mathf.Abs(bubble_pos.x - spawned_bubbles[i].transform.position.x) < bubble_min_x_distance ||
-						Mathf.Abs(bubble_pos.y - spawned_bubbles[i].transform.position.y) < bubble_min_y_distance) {
-						is_valid_pos = false;
-						break;
-					}
-				}
-				attempts++;
-			} while (!is_valid_pos && attempts < 20);
-			if (is_valid_pos) {
-				SpawnBubble(speeches[Random.Range(0, speeches.Length)], bubble_pos);
-				Debug.Log("Valid Position Found");
-			} else {
-				StartCoroutine(SpawnDistraction());
-				Debug.Log("Retrying Spawning Bubble...");
-			}
+			SpawnBubble(speeches[Random.Range(0, speeches.Length)], Vector3.zero);
 		} else {
 			StartCoroutine(SpawnDistraction());
 			Debug.Log("Can't Spawn Any More Bubbles");
 		}
+	}
+
+	public IEnumerator DespawnBoss() {
+		yield return new WaitForSeconds(1f);
+		boss.GetComponent<Boss>().can_tween = true;
+		boss.GetComponent<Boss>().is_tween_reversed = true;
 	}
 }

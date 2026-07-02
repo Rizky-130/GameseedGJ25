@@ -51,32 +51,32 @@ MonoBehaviour:
   - {fileID: 1900279613096922216, guid: cf9d74b87791eb7449d3942e8f379cdb, type: 3}
   distraction_paper: {fileID: 0}
   boss: {fileID: 0}
-  p1_customers_upper_bound: 15
-  p2_customers_upper_bound: 30
+  pause_variant: {fileID: 0}
+  p1_customers_upper_bound: 25
+  p2_customers_upper_bound: 45
   time_until_game_over: 30
   time_remaining: 30
   paper_start_y: 10
-  p1_paper_min_time: 15
-  p1_paper_max_time: 30
+  p1_paper_min_time: 14
+  p1_paper_max_time: 28
   p2_paper_min_time: 12
-  p2_paper_max_time: 28
+  p2_paper_max_time: 25
   p3_paper_min_time: 9
-  p3_paper_max_time: 22
+  p3_paper_max_time: 21
   speeches:
   - I heard the food sucks!
   - I'm HUNGRY.
   - This place STINKS.
   - Can't you cook any faster?
   - Be quick! Or I'll just eat you instead.
-  bubble_min_x_distance: 2
-  bubble_min_y_distance: 1.5
   p1_bubble_min_time: 10
-  p1_bubble_max_time: 20
-  p2_bubble_min_time: 8
-  p2_bubble_max_time: 18
+  p1_bubble_max_time: 18
+  p2_bubble_min_time: 9
+  p2_bubble_max_time: 17
   p3_bubble_min_time: 7
-  p3_bubble_max_time: 18
+  p3_bubble_max_time: 16
   max_bubbles: 6
+  bubbles: []
   bubble_count: 0
 --- !u!82 &6339977211461417010
 AudioSource:

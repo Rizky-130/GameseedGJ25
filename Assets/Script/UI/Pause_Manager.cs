@@ -32,7 +32,7 @@ public class PauseMenuManager : MonoBehaviour
     public CanvasGroup fadeOverlay;
     public float fadeDuration = 0.6f;
 
-    private bool isPaused = false;
+    public bool isPaused = false;
     private bool isAnimating = false;
     private Vector3 camOriginalPos;
 

@@ -26,7 +26,7 @@ public class Boss : MonoBehaviour {
 				if (transform.position.y < end_y + 0.02) {
 					transform.position = new Vector2(0, end_y);
 					can_tween = false;
-					StartCoroutine(DespawnBoss());
+					DistractionManager.Instance.StartCoroutine(DistractionManager.Instance.DespawnBoss());
 				}
 			} else {
 				transform.position = Vector2.Lerp(transform.position, new Vector2(0, start_y), 10f * Time.deltaTime);
@@ -38,11 +38,5 @@ public class Boss : MonoBehaviour {
 				}
 			}
 		}
-	}
-
-	IEnumerator DespawnBoss() {
-		yield return new WaitForSeconds(1f);
-		can_tween = true;
-		is_tween_reversed = true;
 	}
 }
