@@ -201,8 +201,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: RETURN
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2834bdf5948f0724793b73041b8a46f5, type: 2}
-  m_sharedMaterial: {fileID: 6908105609799128037, guid: 2834bdf5948f0724793b73041b8a46f5, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 3a7f47d11a799104c9c3396778b195d3, type: 2}
+  m_sharedMaterial: {fileID: 6199383249516136021, guid: 3a7f47d11a799104c9c3396778b195d3, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -854,8 +854,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -256, y: 122}
-  m_SizeDelta: {x: 360.626, y: 199.5467}
+  m_AnchoredPosition: {x: -260, y: 125}
+  m_SizeDelta: {x: 328.9314, y: 136.1575}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1606007481498897295
 CanvasRenderer:
@@ -1615,8 +1615,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: RESTART
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2834bdf5948f0724793b73041b8a46f5, type: 2}
-  m_sharedMaterial: {fileID: 6908105609799128037, guid: 2834bdf5948f0724793b73041b8a46f5, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 3a7f47d11a799104c9c3396778b195d3, type: 2}
+  m_sharedMaterial: {fileID: 6199383249516136021, guid: 3a7f47d11a799104c9c3396778b195d3, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1928,8 +1928,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 196, y: 158}
-  m_SizeDelta: {x: 339.6638, y: 199.5467}
+  m_AnchoredPosition: {x: 212, y: 144.82}
+  m_SizeDelta: {x: 308.7832, y: 153.8972}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8113831109289226617
 CanvasRenderer:
@@ -2174,7 +2174,7 @@ GameObject:
   - component: {fileID: 3768823857304154068}
   - component: {fileID: 2465297168040891773}
   m_Layer: 5
-  m_Name: Trumpet
+  m_Name: go_aud
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2209,9 +2209,9 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: dd573ae8d4d507c448c7f6f390dce75e, type: 3}
+  m_audioClip: {fileID: 8300000, guid: bfd004ad7395d3d4fb056e03aa947cdd, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.499
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -2471,7 +2471,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 960, y: 540}
+  m_AnchoredPosition: {x: 938, y: 481}
   m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &5996811261539005887

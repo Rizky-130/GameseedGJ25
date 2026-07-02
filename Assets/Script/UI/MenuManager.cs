@@ -16,6 +16,10 @@ public class MenuManager : MonoBehaviour
     public Vector2 creditCenter;
     public Vector2 creditHiddenLeft;
 
+    [Header("UI Locking")]
+    [Tooltip("CanvasGroup covering all menu buttons. Gets disabled the moment Play is pressed.")]
+    public CanvasGroup menuCanvasGroup;
+
     [Header("Play Transition")]
     public AudioSource audioSource;
     public AudioClip playSound;
@@ -81,6 +85,14 @@ public class MenuManager : MonoBehaviour
     public void PlayGame()
     {
         if (transitioning) return;
+
+        // Lock out all menu buttons immediately
+        if (menuCanvasGroup != null)
+        {
+            menuCanvasGroup.interactable = false;
+            menuCanvasGroup.blocksRaycasts = false;
+        }
+
         StopAllCoroutines();
         StartCoroutine(PlayGameTransition());
     }
@@ -89,13 +101,12 @@ public class MenuManager : MonoBehaviour
     {
         transitioning = true;
 
-        // Play the sound first
+        // Fire the sound but don't wait for it — it plays underneath the fade/load
         if (audioSource != null && playSound != null)
             audioSource.PlayOneShot(playSound);
 
-        // Wait for the clip to finish + any optional extra delay
-        float waitTime = (playSound != null ? playSound.length : 0f) + soundDelayBeforeFade;
-        yield return new WaitForSeconds(waitTime);
+        if (soundDelayBeforeFade > 0f)
+            yield return new WaitForSeconds(soundDelayBeforeFade);
 
         // Fade screen to black
         if (fadeOverlay != null)

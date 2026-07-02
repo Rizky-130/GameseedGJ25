@@ -37,7 +37,6 @@ public class GameOverManager : MonoBehaviour
     private float elapsedTime = 0f;
     private Vector3 camOriginalPos;
 
-    // Store stats before scene reload
     private static int savedScore = 0;
     private static float savedTime = 0f;
     private static int savedCustomerServed = 0;
@@ -57,7 +56,6 @@ public class GameOverManager : MonoBehaviour
         if (cameraTransform != null)
             camOriginalPos = cameraTransform.localPosition;
 
-        // If we reloaded for game over, show it immediately
         if (pendingGameOver)
         {
             pendingGameOver = false;
@@ -72,10 +70,10 @@ public class GameOverManager : MonoBehaviour
         if (!gameOverShown)
             elapsedTime += Time.deltaTime;
 
-        if (Input.GetKeyDown(KeyCode.G) && !gameOverShown)
-        {
-            ShowGameOver();
-        }
+        // if (Input.GetKeyDown(KeyCode.G) && !gameOverShown)
+        // {
+        //     ShowGameOver();
+        // }
     }
 
     public void ShowGameOver()
@@ -85,7 +83,6 @@ public class GameOverManager : MonoBehaviour
 
         gameOverShown = true;
 
-        // Save stats before reload
         if (GameManager.Instance != null)
         {
             savedScore = GameManager.Instance.score;
@@ -107,7 +104,6 @@ public class GameOverManager : MonoBehaviour
 
         yield return new WaitForSecondsRealtime(delayBeforeReveal);
 
-        // Reload the scene — Start() will detect pendingGameOver and show the canvas
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 

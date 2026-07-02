@@ -11,6 +11,8 @@ public class TutorialManager : MonoBehaviour
     public GameObject howToPlayPanel;
     public CanvasGroup howToPlayGroup;
 
+    public GameObject howToPlayPanel2;
+
     public GameObject skipConfirmPanel;
     public GameObject suppliesSpotlight;
     public GameObject mixAndGuideSpotlight;
@@ -68,6 +70,7 @@ public class TutorialManager : MonoBehaviour
     void HideAll()
     {
         SetActiveSafe(howToPlayPanel, false);
+        SetActiveSafe(howToPlayPanel2, false);
         SetActiveSafe(skipConfirmPanel, false);
         SetActiveSafe(suppliesSpotlight, false);
         SetActiveSafe(mixAndGuideSpotlight, false);
@@ -95,6 +98,7 @@ public class TutorialManager : MonoBehaviour
     {
         SetHowToPlayInteractable(false);
         SetActiveSafe(howToPlayPanel, false);
+        SetActiveSafe(howToPlayPanel2, false);
         SetActiveSafe(skipConfirmPanel, true);
     }
 
@@ -110,9 +114,20 @@ public class TutorialManager : MonoBehaviour
         EndTutorial();
     }
 
-    public void OnContinuePressed()
+    // Called by Tutorial Panel 1's CONTINUE button
+    // Hides panel 1, shows panel 2
+    public void OnPanel1ContinuePressed()
     {
         SetActiveSafe(howToPlayPanel, false);
+        SetActiveSafe(howToPlayPanel2, true);
+        SetHowToPlayInteractable(true);
+    }
+
+    // Called by Tutorial Panel 2's CONTINUE button
+    // Hides panel 2, starts the spotlight sequence
+    public void OnContinuePressed()
+    {
+        SetActiveSafe(howToPlayPanel2, false);
         SetActiveSafe(suppliesSpotlight, true);
     }
 
@@ -155,6 +170,7 @@ public class TutorialManager : MonoBehaviour
     void EndTutorial()
     {
         SetActiveSafe(howToPlayPanel, false);
+        SetActiveSafe(howToPlayPanel2, false);
         SetActiveSafe(skipConfirmPanel, false);
         SetActiveSafe(suppliesSpotlight, false);
         SetActiveSafe(mixAndGuideSpotlight, false);
